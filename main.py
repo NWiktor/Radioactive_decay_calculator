@@ -13,6 +13,9 @@ Info
 ----
 Wetzl Viktor - 2023.03.25 - All rights reserved
 """
+import sys
+from datetime import date
+import webbrowser
 
 from fpdf import FPDF
 import matplotlib.pyplot as plt
@@ -105,7 +108,7 @@ def create_plot_data(mass_distribution, time_step, time_unit="s"):
     plt.show()
 
 
-def main():
+def main_calc():
     """  """
     # list of dictionaries
     init_mass = [
@@ -137,6 +140,111 @@ def main():
     create_plot_data(init_mass, time_step, time_unit="d")
 
 
+# Class and function definitions
+class MainWindow(QMainWindow):
+    def __init__(self, idbh):
+        super().__init__(parent=None)
+
+        # Create User object
+        self._idbh = idbh
+
+        # Create GUI
+        self.setWindowTitle(f"Radioactive Decay Calculator App - {date.today()}")
+        self._create_menubar() # Create menu bar
+        # self._create_calendar_view() # Create calendar (central) view
+        # self._update_calendar_view()
+        self._create_status_bar() # Create status bar
+        # self.showMaximized()
+
+
+    def center(self):
+        """Position window to the center."""
+        qt_rectangle = self.frameGeometry()
+        centerpoint = QDesktopWidget().availableGeometry().center()
+        qt_rectangle.moveCenter(centerpoint)
+        self.move(qt_rectangle.topLeft())
+
+
+    def _create_menubar(self):
+        menu_bar = self.menuBar()
+        file_menu = menu_bar.addMenu('File')
+        view_menu = menu_bar.addMenu('View')
+        project_menu = menu_bar.addMenu('Project')
+        export_menu = menu_bar.addMenu('Export')
+        settings_menu = menu_bar.addMenu('Settings')
+        help_menu = menu_bar.addMenu('Help')
+
+        self.start_action = QAction('Start', self,
+        triggered=self.start_calculation)
+        self.close_action = QAction('Close', self,
+        triggered=self.close_window, shortcut="Ctrl+E")
+        #
+        self.settings_action = QAction('Settings', self,
+        triggered=self.open_settings)
+        #
+        self.report_bug_action = QAction('Report bug', self,
+        triggered=self.report_bug)
+        self.open_sharepoint_action = QAction('C3D Sharepoint', self,
+        triggered=self.open_sharepoint)
+        self.visit_website_action = QAction('C3D Website', self,
+        triggered=self.open_company_webpage)
+        self.about_action = QAction('About', self, triggered=self.about)
+
+        file_menu.addAction(self.start_action)
+        file_menu.addSeparator()
+        file_menu.addAction(self.close_action)
+        settings_menu.addAction(self.settings_action)
+        help_menu.addAction(self.report_bug_action)
+        help_menu.addAction(self.open_sharepoint_action)
+        help_menu.addAction(self.visit_website_action)
+        help_menu.addAction(self.about_action)
+
+
+    def _create_status_bar(self):
+        self.statusbar = self.statusBar()
+
+
+    def start_calculation(self):
+        main_calc()
+
+
+    def open_settings(self):
+        print("Settings_open")
+
+
+    def report_bug(self):
+        print("Report bug")
+
+
+    def about(self):
+        """Prints program version data."""
+        about_w = QMessageBox()
+        about_w.setWindowTitle("About")
+        about_w.setIcon(QMessageBox.Information)
+        about_w.setText("Radioactive Decay Calculator App")
+        about_w.setInformativeText(
+        f"Program ver.:\t {SOFTWARE_VERSION}\n"
+        + f"Release date:\t {RELEASE_DATE}\n"
+        + "Created by:\t Wetzl Viktor"
+        )
+        about_w.exec_()
+
+
+    def open_sharepoint(self):
+        """ Opens C3D sharepoint webpage in the default browser. """
+        # webbrowser.open('https://c3dhu.sharepoint.com/')
+
+
+    def open_company_webpage(self):
+        """ Opens C3D webpage in the default browser. """
+        # webbrowser.open('https://c3d.hu/')
+
+
+    def close_window(self):
+        self.close()
+        l.info("Main window terminated!")
+
+
 ### Include guard
 if __name__ == '__main__':
     # Init JSON handlers:
@@ -156,14 +264,13 @@ if __name__ == '__main__':
     # Load isotope db.
     database = IDBH.load()
 
-    main()
-
+    app = QApplication([])
+    app.setStyle('Fusion')
+    main = MainWindow(database)
+    main.show()
+    main.center()
+    app.exec()
+    l.info("Main window open")
     IDBH.dump(database)
-
-    # app = QApplication([])
-    # app.setStyle('Fusion')
-    # main = MainWindow()
-    # main.show()
-    # main.center()
-    # app.exec()
-    # sys.exit()
+    l.info("Program exit!")
+    sys.exit()
