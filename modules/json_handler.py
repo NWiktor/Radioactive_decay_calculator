@@ -24,7 +24,6 @@ import json
 
 # Local application imports
 from logger import MAIN_LOGGER as l
-import modules.utility as utils
 
 
 class JsonDbHandler():
