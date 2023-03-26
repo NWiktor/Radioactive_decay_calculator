@@ -28,7 +28,7 @@ from PyQt5.QtGui import (QFont, QPainter, QBrush, QColor, QFontMetrics)
 from PyQt5.QtCore import (Qt, QRect, QSize)
 
 
-def decay(isotope, original_mass, time):
+def decay_isotope(isotope, original_mass, time):
     """  """
     data = database[isotope].get("decays", None)
     half_life = database[isotope].get("half_life", None)
@@ -54,17 +54,20 @@ def decay(isotope, original_mass, time):
 
 
 def convert_time_unit(time_step, time_unit):
+    """  """
+    if time_unit == "min":
+        time_step = time_step/60
 
-    if time_unit == "s":
-        return time_step
-    elif time_unit == "min":
-        return time_step/60
-    elif time_unit == "h":
-        return time_step/3600
-    elif time_unit == "d":
-        return time_step/86400
-    elif time_unit == "a":
-        return time_step/31556926
+    if time_unit == "h":
+        time_step = time_step/3600
+
+    if time_unit == "d":
+        time_step = time_step/86400
+
+    if time_unit == "a":
+        time_step = time_step/31556926
+
+    return time_step
 
 
 def create_plot_data(mass_distribution, time_step, time_unit="s"):
@@ -86,13 +89,19 @@ def create_plot_data(mass_distribution, time_step, time_unit="s"):
 
         i += 1
 
-    for isotope, value in data.items():
-        plt.plot(value["time"], value["mass"], label=f"{isotope}")
+    fig, ax = plt.subplots(1)
 
-    plt.title("Radioactive decay")
-    plt.xlabel(f"Time [{time_unit}]")
-    plt.ylabel("Mass [kg]")
-    plt.legend()
+    for isotope, value in data.items():
+        ax.plot(value["time"], value["mass"], label=f"{isotope}")
+
+    ax.set_title("Radioactive decay")
+    ax.set_xlabel(f"Time [{time_unit}]")
+    ax.set_ylabel("Mass [kg]")
+    ax.set_xlim(0, None)
+    ax.set_ylim(0, None)
+    ax.grid()
+    ax.legend()
+    fig.canvas.manager.set_window_title('Radioactive decay results')
     plt.show()
 
 
@@ -100,22 +109,21 @@ def main():
     """  """
     # list of dictionaries
     init_mass = [
-    {"Ra-225": 10, "Ac-225": 10} # kg
+    {"Ra-225": 10}#, "Ac-225": 10} # kg
     ]
 
-    time_step = 50000 # second per day: 24*60*60
+    time_step = 500 # second per day: 24*60*60
     i = 0
-    step = 150
+    step = 15000
 
     l.info("Starting decay calculation...")
     while i <= step:
 
-        # print(f"Step {i}")
         new_mass = {}
         for isotope, mass in init_mass[-1].items():
 
             # Calculate decay
-            products = decay(isotope, mass, time_step)
+            products = decay_isotope(isotope, mass, time_step)
 
             for product in products:
                 if product[0] not in new_mass:
@@ -143,7 +151,7 @@ if __name__ == '__main__':
     + str(config["program_version_patch"]) + "."
     + str(config["program_build"]))
     RELEASE_DATE = config["release_date"]
-    l.info(f"{SOFTWARE_VERSION}-{RELEASE_DATE}")
+    l.info("%s-%s", SOFTWARE_VERSION, RELEASE_DATE)
 
     # Load isotope db.
     database = IDBH.load()
