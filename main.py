@@ -15,6 +15,7 @@ Wetzl Viktor - 2023.03.25 - All rights reserved
 """
 import sys
 from datetime import date
+from copy import deepcopy
 import webbrowser
 
 from fpdf import FPDF
@@ -25,8 +26,8 @@ import modules.json_handler as jdbh
 # pylint: disable = no-name-in-module, unused-import
 from PyQt5.QtWidgets import (QApplication, QWidget, QMenu, QMainWindow,
 QAction, QGridLayout, QVBoxLayout, QHBoxLayout, QDesktopWidget, QPushButton,
-QMessageBox, QFormLayout, QLineEdit, QInputDialog,
-QTreeWidgetItem, QTreeWidget, QSizePolicy, QLabel, QSpacerItem)
+QMessageBox, QFormLayout, QLineEdit, QInputDialog, QDockWidget, QListWidget,
+QTreeWidgetItem, QTreeWidget, QSizePolicy, QLabel, QSpacerItem, QComboBox)
 from PyQt5.QtGui import (QFont, QPainter, QBrush, QColor, QFontMetrics)
 from PyQt5.QtCore import (Qt, QRect, QSize)
 
@@ -41,11 +42,12 @@ class MainWindow(QMainWindow):
 
         # Create GUI
         self.setWindowTitle(f"Radioactive Decay Calculator App - {date.today()}")
+        self._create_simulation_view() # Create (dock) widget
         self._create_menubar() # Create menu bar
-        # self._create_calendar_view() # Create calendar (central) view
+        self._create_plotview() # Create Mathplotlib (central) view
         # self._update_calendar_view()
         self._create_status_bar() # Create status bar
-        # self.showMaximized()
+        self.showMaximized()
 
 
     def center(self):
@@ -70,6 +72,8 @@ class MainWindow(QMainWindow):
         self.close_action = QAction('Close', self,
         triggered=self.close_window, shortcut="Ctrl+E")
         #
+        self.show_simulation_view_action = self.simulation_view.toggleViewAction()
+        #
         self.settings_action = QAction('Settings', self,
         triggered=self.open_settings)
         #
@@ -84,6 +88,7 @@ class MainWindow(QMainWindow):
         file_menu.addAction(self.start_action)
         file_menu.addSeparator()
         file_menu.addAction(self.close_action)
+        view_menu.addAction(self.show_simulation_view_action)
         settings_menu.addAction(self.settings_action)
         help_menu.addAction(self.report_bug_action)
         help_menu.addAction(self.open_sharepoint_action)
@@ -93,6 +98,71 @@ class MainWindow(QMainWindow):
 
     def _create_status_bar(self):
         self.statusbar = self.statusBar()
+
+
+    def _create_simulation_view(self):
+        self.simulation_view = QDockWidget('Simulation parameters', self)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.simulation_view)
+
+        # self.isotopes_list = {}
+        self.isotopes_list = {"Ra-225": 10, "Ac-225": 10}
+
+        # Add Fields
+        layout = QVBoxLayout()
+        form_layout = QFormLayout()
+        
+        self.interval = QLineEdit(str(500))
+        self.interval.setFixedWidth(70)
+        form_layout.addRow(QLabel("Time interval [s]"), self.interval)
+        self.step_number = QLineEdit(str(15000))
+        self.step_number.setFixedWidth(70)
+        form_layout.addRow(QLabel("Number of steps"), self.step_number)
+        self.isotope_name_cbox = QComboBox()
+        self.isotope_name_cbox.addItems(self._idb.keys())
+        self.isotope_name_cbox.setEditable(False)
+        self.isotope_name_cbox.setFixedWidth(70)
+        self.isotope_name_cbox.setInsertPolicy(QComboBox.InsertAlphabetically)
+        form_layout.addRow(QLabel("Isotope name"), self.isotope_name_cbox)
+
+        self.isotope_mass = QLineEdit(str(""))
+        self.isotope_mass.setFixedWidth(70)
+        form_layout.addRow(QLabel("Isotope mass [kg]"), self.isotope_mass)
+        layout.addLayout(form_layout)
+
+        # Add Buttons
+        button_box = QHBoxLayout()
+        button_accept = QPushButton("Add")
+        button_accept.clicked.connect(self.accept_input)
+        button_box.addWidget(button_accept)
+        button_box.addStretch()
+        layout.addLayout(button_box)
+
+        # Add Listview
+        layout.addWidget(QLabel("Added isotopes"))
+        self.shown_iso_list_widget = QListWidget()
+        for name, mass in self.isotopes_list.items():
+            self.shown_iso_list_widget.addItem(f"{name} - {mass} [kg]")
+        layout.addWidget(self.shown_iso_list_widget)
+
+        layout_widget = QWidget(self)
+        layout_widget.setLayout(layout)
+        self.simulation_view.setWidget(layout_widget)
+
+
+    def accept_input(self):
+        name = self.isotope_name_cbox.currentText().strip()
+        mass = self.isotope_mass.text().strip()
+        self.isotopes_list.update({name: float(mass)})
+
+        self.shown_iso_list_widget.clear()
+
+        for name, mass in self.isotopes_list.items():
+            self.shown_iso_list_widget.addItem(f"{name} - {mass} [kg]")
+        print(self.isotopes_list)
+
+
+    def _create_plotview(self):
+        print("Plotview")
 
 
     def decay_isotope(self, isotope, original_mass, time):
@@ -120,29 +190,29 @@ class MainWindow(QMainWindow):
         return products
 
 
-    def convert_time_unit(self, time_step, time_unit):
+    def convert_time_unit(self, time_interval, time_unit):
         """  """
         if time_unit == "min":
-            time_step = time_step/60
+            time_interval = time_interval/60
 
         if time_unit == "h":
-            time_step = time_step/3600
+            time_interval = time_interval/3600
 
         if time_unit == "d":
-            time_step = time_step/86400
+            time_interval = time_interval/86400
 
         if time_unit == "a":
-            time_step = time_step/31556926
+            time_interval = time_interval/31556926
 
-        return time_step
+        return time_interval
 
 
-    def create_plot_data(self, mass_distribution, time_step, time_unit="s"):
+    def create_plot_data(self, mass_distribution, time_interval, time_unit="s"):
         """  """
 
         i = 0
         data = {}
-        time_step = self.convert_time_unit(time_step, time_unit)
+        time_interval = self.convert_time_unit(time_interval, time_unit)
 
         # Iterate over a specific mass-distribution in a given timestep
         for mix in mass_distribution:
@@ -151,7 +221,7 @@ class MainWindow(QMainWindow):
                 if isotope not in data:
                     data[isotope] = {"time": [], "mass": []}
                 else:
-                    data[isotope]["time"].append(i*time_step)
+                    data[isotope]["time"].append(i*time_interval)
                     data[isotope]["mass"].append(mass)
 
             i += 1
@@ -174,15 +244,11 @@ class MainWindow(QMainWindow):
 
     def start_calculation(self):
         """  """
-        # list of dictionaries
-        init_mass = [
-        {"Ra-225": 10}#, "Ac-225": 10} # kg
-        ]
-
-        time_step = 500 # second per day: 24*60*60
+        init_mass = [deepcopy(self.isotopes_list)] # list of dictionaries
+        time_interval = int(self.interval.text().strip()) # second per day: 24*60*60
+        step = int(self.step_number.text().strip())
+        
         i = 0
-        step = 15000
-
         l.info("Starting decay calculation...")
         while i <= step:
 
@@ -190,7 +256,7 @@ class MainWindow(QMainWindow):
             for isotope, mass in init_mass[-1].items():
 
                 # Calculate decay
-                products = self.decay_isotope(isotope, mass, time_step)
+                products = self.decay_isotope(isotope, mass, time_interval)
 
                 for product in products:
                     if product[0] not in new_mass:
@@ -201,7 +267,7 @@ class MainWindow(QMainWindow):
             init_mass.append(new_mass)
             i += 1
 
-        self.create_plot_data(init_mass, time_step, time_unit="d")
+        self.create_plot_data(init_mass, time_interval, time_unit="d")
 
 
     def open_settings(self):
