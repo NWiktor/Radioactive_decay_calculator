@@ -1,0 +1,12 @@
+{
+  "Ra-225": {"half_life": 1287360, "product": "Ac-238"},
+  "Ac-238": {"half_life": 860000, "product": "Fr-221"},
+    "Fr-221": {"half_life": 288, "product": "At-217"},
+    "At-217": {"half_life": 0.032, "product": "Bi-213"},
+    "Bi-213": {"half_life": 2790, "product": "Po-213"},
+    "Po-213": {"half_life": 3.72e-6, "product": "Pb-209"},
+    "Pb-209": {"half_life": 11700, "product": "Bi-209"},
+    "Bi-209": {"half_life": 59918400e+19, "product": "Ti-205"},
+    "Ti-205": {"half_life": null, "product": null}
+    }
+}
