@@ -21,7 +21,7 @@ class EntryObjectBaseClass():
         pass
 
 
-    def dump_data(self):
+    def dump(self):
         """Returns a dictionary with entry data."""
         return self.__dict__.copy()
 
@@ -35,31 +35,71 @@ class EntryObjectBaseClass():
         return str(self.__class__) + ": " + str(self.__dict__)
 
 
-# TODO: rework this section
-# class IsotopeEntry(EntryObjectBaseClass):
-#    """This class is intended to initialize a JSON settings entry."""
+class IsotopeEntry(EntryObjectBaseClass):
+   """This class is intended to initialize a JSON settings entry."""
+
+    # TODO: Kell ez a fv. ? Összedolgozni a load()-al?
+    def create(self, name, symbol, mass_number, proton_number=None, neutron_number=None):
+        """ Create new isotrope entry, with minimum data. """
+        self.name = name
+        self.symbol = symbol
+        self.mass_number = mass_number
+        self.proton_number = proton_number
+        self.neutron_number = neutron_number
+        self.short_id = f"{name}-{mass_number}"
+        self.reference = None
+        self.half_life = None
+        self.decays = None # dict of dicts - multiple decay type is possible
+        l.info("Entry created!")
 
 
-# class Isotope:
-#   def __init__(name, symbol, proton_number, neutron_number):
-#       self.name = name
-#       self.symbol = symbol
-#       self.proton_number = proton_number
-#       self.neutron_number = neutron_number
-#       self.mass_number = proton_number + neutron_number
-#       self.short_id = f"{name}-{proton_number}"
-#       self.decays = {} # dict of dicts - multiple decay is possible, each of them with multiple products
+    def load(self, raw_data):
+        """ Load existing data (dict) to class structure, to filter entry, and set defaults. """
+        self.name = raw_data.get("name", None)
+        self.symbol = raw_data.get("symbol", None)
+        self.mass_number = raw_data.get("mass_number", None)
+        self.proton_number = raw_data.get("proton_number", None)
+        self.neutron_number = raw_data.get("neutron_number", None)
+        self.short_id = raw_data.get("short_id", None)
+        self.reference = raw_data.get("reference", None)
+        self.half_life = raw_data.get("half_life", None)
+
+        if self.half_life is None:
+            self.decays = None
+
+        else:
+            raw_decay_data = raw_data.get("decays", None)
+            if raw_decay_data is not None
+                self.decays = self._load_decays(raw_decay_data)
+
+            else:
+                l.error("Undefined decay for unstable isotope! Please check input data!")
+                self.decays = None
+
+        l.info("Entry loaded!")
 
 
-    # def __init__(self, raw_settings):
-    #     self.total_holidays = raw_settings.get("total_holidays", {})
-    #     self.week_schedule = raw_settings.get("week_schedule", [8,8,8,8,8,0,0])
-    #     self.start_fullscreen = raw_settings.get("start_fullscreen", False)
-    #     self.shown_projects = raw_settings.get("shown_projects", [])
-    #     self.absolute_overwork_limit = raw_settings.get("absolute_overwork_limit", 12) # This cannot be exceeded in any case
-    #     self.overwork_limit = raw_settings.get("overwork_limit", 8) # Below this, no overwork signal
-    #     self.completeness_percentage = raw_settings.get("completeness_percentage", 0.5) # Minimum % value to show completed day
-    #     l.info("Settings initialized!")
+    def _load_decays(self, raw_data):
+        """  """
+        decays = {}
+        for decay, decay_data in raw_data.items():
+            product = decay_data.get("product", None)
+            released_energy = decay_data.get("released_energy", None)
+            probability = decay_data.get("probability", 1.0)
+            decays.update(self._create_decay(decay, product, released_energy, probability))
+
+        self.decays = decays
+        l.info("Decays loaded!")
+
+
+    def _create_decay(self, decay_type, product, probability, released_energy):
+        """  """
+        decay = {decay_type : {
+        "product" : product,
+        "probability": probability,
+        "released_energy" : released_energy
+        }}
+        return decay
 
 
 if __name__ == '__main__':

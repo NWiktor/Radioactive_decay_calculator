@@ -26,6 +26,7 @@ from matplotlib.figure import Figure
 from logger import MAIN_LOGGER as l
 import modules.json_handler as jdbh
 from gui.simulation_widget import SimulationWidget
+from gui.create_isotope_window import CreateIsotopeWindow
 
 # pylint: disable = no-name-in-module, unused-import
 from PyQt5.QtWidgets import (QApplication, QWidget, QMenu, QMainWindow,
@@ -151,7 +152,16 @@ class MainWindow(QMainWindow):
 
 
     def add_entry(self):
-        print("Add")
+        """  """
+        create_new_isotope_w = CreateIsotopeWindow()
+        create_new_isotope_w.exec_()
+
+        # Process results
+        if create_new_isotope_w.results is not None:
+            print("something")
+
+        else:
+            print("no something")
 
 
     def edit_entry(self):
