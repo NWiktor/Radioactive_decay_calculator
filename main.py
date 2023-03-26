@@ -73,17 +73,23 @@ class MainWindow(QMainWindow):
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu('File')
         view_menu = menu_bar.addMenu('View')
-        project_menu = menu_bar.addMenu('Project')
+        database_menu = menu_bar.addMenu('Database')
         export_menu = menu_bar.addMenu('Export')
         settings_menu = menu_bar.addMenu('Settings')
         help_menu = menu_bar.addMenu('Help')
 
         self.start_action = QAction('Start', self,
-        triggered=self.start_calculation)
+        triggered=self.start_calculation, shortcut="Ctrl+S")
         self.close_action = QAction('Close', self,
-        triggered=self.close_window, shortcut="Ctrl+E")
+        triggered=self.close_window, shortcut="Ctrl+X")
         #
         self.show_simulation_view_action = self.simulation_view.toggleViewAction()
+        self.clear_plot_action = QAction('Clear plot', self, triggered=self._clear_plotview)
+        #
+        self.add_entry_action = QAction('Add isotope', self,
+        triggered=self.add_entry, shortcut="Ctrl+A")
+        self.edit_entry_action = QAction('Edit isotope', self,
+        triggered=self.edit_entry, shortcut="Ctrl+E")
         #
         self.settings_action = QAction('Settings', self,
         triggered=self.open_settings)
@@ -100,6 +106,9 @@ class MainWindow(QMainWindow):
         file_menu.addSeparator()
         file_menu.addAction(self.close_action)
         view_menu.addAction(self.show_simulation_view_action)
+        view_menu.addAction(self.clear_plot_action)
+        database_menu.addAction(self.add_entry_action)
+        database_menu.addAction(self.edit_entry_action)
         settings_menu.addAction(self.settings_action)
         help_menu.addAction(self.report_bug_action)
         help_menu.addAction(self.open_sharepoint_action)
@@ -127,6 +136,26 @@ class MainWindow(QMainWindow):
         self.sc.axes.set_ylim(0, None)
         self.sc.axes.grid()
         self.setCentralWidget(self.sc)
+
+
+    def _clear_plotview(self):
+        self.sc.axes.cla() # Clear existing curves
+        self.sc.axes.set_title("Radioactive decay")
+        self.sc.axes.set_xlabel("Time [s]")
+        self.sc.axes.set_ylabel("Mass [kg]")
+        self.sc.axes.set_xlim(0, None)
+        self.sc.axes.set_ylim(0, None)
+        self.sc.axes.grid()
+        self.sc.draw()
+        self.sc.flush_events()
+
+
+    def add_entry(self):
+        print("Add")
+
+
+    def edit_entry(self):
+        print("Edit")
 
 
     def decay_isotope(self, isotope, original_mass, time):
