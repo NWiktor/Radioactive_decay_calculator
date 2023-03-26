@@ -17,6 +17,7 @@ Wetzl Viktor - 2023.03.25 - All rights reserved
 from fpdf import FPDF
 import matplotlib.pyplot as plt
 from logger import MAIN_LOGGER as l
+import modules.json_handler as jdbh
 
 # pylint: disable = no-name-in-module, unused-import
 from PyQt5.QtWidgets import (QApplication, QWidget, QMenu, QMainWindow,
@@ -26,21 +27,18 @@ QTreeWidgetItem, QTreeWidget, QSizePolicy, QLabel, QSpacerItem)
 from PyQt5.QtGui import (QFont, QPainter, QBrush, QColor, QFontMetrics)
 from PyQt5.QtCore import (Qt, QRect, QSize)
 
-# Global variables
-RELEASE_DATE = "2023-03-25"
 
-
-database = {
-    "Ra-225": {"half_life": 1_287_360, "product": "Ac-238"},
-    "Ac-238": {"half_life": 860_000, "product": "Fr-221"},
-    "Fr-221": {"half_life": 288, "product": "At-217"}, #multiple product (!)
-    "At-217": {"half_life": 0.032, "product": "Bi-213"},
-    "Bi-213": {"half_life": 2_790, "product": "Po-213"},
-    "Po-213": {"half_life": 3.72e-6, "product": "Pb-209"},
-    "Pb-209": {"half_life": 11_700, "product": "Bi-209"},
-    "Bi-209": {"half_life": 59_918_400e+19, "product": "Ti-205"},
-    "Ti-205": {"half_life": None, "product": None}
-    }
+# database = {
+#     "Ra-225": {"half_life": 1_287_360, "product": "Ac-238"},
+#     "Ac-238": {"half_life": 860_000, "product": "Fr-221"},
+#     "Fr-221": {"half_life": 288, "product": "At-217"}, #multiple product (!)
+#     "At-217": {"half_life": 0.032, "product": "Bi-213"},
+#     "Bi-213": {"half_life": 2_790, "product": "Po-213"},
+#     "Po-213": {"half_life": 3.72e-6, "product": "Pb-209"},
+#     "Pb-209": {"half_life": 11_700, "product": "Bi-209"},
+#     "Bi-209": {"half_life": 59_918_400e+19, "product": "Ti-205"},
+#     "Ti-205": {"half_life": None, "product": None}
+#     }
 
 
 def decay(isotope, original_mass, time):
@@ -138,7 +136,26 @@ def main():
 
 ### Include guard
 if __name__ == '__main__':
+    # Init JSON handlers:
+    IDBH = jdbh.JsonDbHandler("database/isotope_database.json") # Isotope db handler
+    CDBH = jdbh.JsonDbHandler("database/configuration_settings.json") # Config db handler
+
+    # Load config
+    config = CDBH.load() # This is hardcoded
+    # Software related data
+    SOFTWARE_VERSION = (str(config["program_version_major"]) + "."
+    + str(config["program_version_minor"]) + "."
+    + str(config["program_version_patch"]) + "."
+    + str(config["program_build"]))
+    RELEASE_DATE = config["release_date"]
+
+    print(SOFTWARE_VERSION)
+    print(RELEASE_DATE)
+
+    database = IDBH.load()
+
     main()
+
     # app = QApplication([])
     # app.setStyle('Fusion')
     # main = MainWindow()
