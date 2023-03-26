@@ -1,11 +1,117 @@
 {
-    "Ra-225": {"half_life": 1287360, "product": "Ac-238"},
-    "Ac-238": {"half_life": 860000, "product": "Fr-221"},
-    "Fr-221": {"half_life": 288, "product": "At-217"},
-    "At-217": {"half_life": 0.032, "product": "Bi-213"},
-    "Bi-213": {"half_life": 2790, "product": "Po-213"},
-    "Po-213": {"half_life": 3.72e-6, "product": "Pb-209"},
-    "Pb-209": {"half_life": 11700, "product": "Bi-209"},
-    "Bi-209": {"half_life": 59918400e+19, "product": "Ti-205"},
-    "Ti-205": {"half_life": null, "product": null}
+    "Ra-225": {
+        "half_life": 1287360,
+        "decays": {
+            "beta_minus": {
+                "product": "Ac-225",
+                "probability": 1.0
+            }
+        }
+    },
+    "Ac-225": {
+        "half_life": 860000,
+        "decays": {
+            "alpha": {
+                "product": "Fr-221",
+                "probability": 1.0
+            }
+        }
+    },
+    "Fr-221": {
+        "half_life": 288,
+        "decays": {
+            "alpha": {
+                "product": "At-217",
+                "probability": 0.999952
+            },
+            "beta_minus": {
+                "product": "Ra-221",
+                "probability": 4.8e-05
+            }
+        }
+    },
+    "Ra-221": {
+        "half_life": 28,
+        "decays": {
+            "alpha": {
+                "product": "Rn-217",
+                "probability": 1.0
+            }
+        }
+    },
+    "At-217": {
+        "half_life": 0.032,
+        "decays": {
+            "alpha": {
+                "product": "Bi-213",
+                "probability": 0.99992
+            },
+            "beta_minus": {
+                "product": "Rn-217",
+                "probability": 8e-05
+            }
+        }
+    },
+    "Rn-217": {
+        "half_life": 0.00054,
+        "decays": {
+            "alpha": {
+                "product": "Po-213",
+                "probability": 1.0
+            }
+        }
+    },
+    "Bi-213": {
+        "half_life": 2790,
+        "decays": {
+            "beta_minus": {
+                "product": "Po-213",
+                "probability": 0.978
+            },
+            "alpha": {
+                "product": "Ti-209",
+                "probability": 0.022
+            }
+        }
+    },
+    "Po-213": {
+        "half_life": 3.72e-06,
+        "decays": {
+            "alpha": {
+                "product": "Pb-209",
+                "probability": 1
+            }
+        }
+    },
+    "Ti-209": {
+        "half_life": 132,
+        "decays": {
+            "beta_minus": {
+                "product": "Pb-209",
+                "probability": 1
+            }
+        }
+    },
+    "Pb-209": {
+        "half_life": 11700,
+        "decays": {
+            "beta_minus": {
+                "product": "Bi-209",
+                "probability": 1
+            }
+        }
+    },
+    "Bi-209": {
+        "half_life": 5.99184e+26,
+        "decays": {
+            "alpha": {
+                "product": "Ti-205",
+                "probability": 1
+            }
+        }
+    },
+    "Ti-205": {
+        "half_life": null,
+        "decays": null
+    }
 }

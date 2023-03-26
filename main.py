@@ -28,32 +28,27 @@ from PyQt5.QtGui import (QFont, QPainter, QBrush, QColor, QFontMetrics)
 from PyQt5.QtCore import (Qt, QRect, QSize)
 
 
-# database = {
-#     "Ra-225": {"half_life": 1_287_360, "product": "Ac-238"},
-#     "Ac-238": {"half_life": 860_000, "product": "Fr-221"},
-#     "Fr-221": {"half_life": 288, "product": "At-217"}, #multiple product (!)
-#     "At-217": {"half_life": 0.032, "product": "Bi-213"},
-#     "Bi-213": {"half_life": 2_790, "product": "Po-213"},
-#     "Po-213": {"half_life": 3.72e-6, "product": "Pb-209"},
-#     "Pb-209": {"half_life": 11_700, "product": "Bi-209"},
-#     "Bi-209": {"half_life": 59_918_400e+19, "product": "Ti-205"},
-#     "Ti-205": {"half_life": None, "product": None}
-#     }
-
-
 def decay(isotope, original_mass, time):
     """  """
-
-    data = database[isotope]
+    data = database[isotope].get("decays", None)
+    half_life = database[isotope].get("half_life", None)
     products = []
 
-    if data["half_life"] is None: #Stable isotope
+    # Stable isotope
+    if data is None:
         products.append([isotope, original_mass])
 
+    # Radioactive isotope
     else:
-        new_mass = original_mass * (2 ** (- (time / data["half_life"]) ) )
+        # Calculate remaining mass of original isotope
+        new_mass = original_mass * (2 ** (- (time / half_life) ) )
         products.append([isotope, new_mass])
-        products.append([data["product"], (original_mass-new_mass)])
+
+        # Iterate over every decay type:
+        for decay in data.values():
+            # Calculate mass by the
+            # mass difference multiplied by the probability factor
+            products.append([decay["product"], (original_mass-new_mass)*decay["probability"]])
 
     return products
 
@@ -105,17 +100,17 @@ def main():
     """  """
     # list of dictionaries
     init_mass = [
-    {"Ra-225": 10, "Ac-238": 10} # kg
+    {"Ra-225": 10, "Ac-225": 10} # kg
     ]
 
     time_step = 50000 # second per day: 24*60*60
     i = 0
     step = 150
 
-    print("Starting calculation...")
+    l.info("Starting decay calculation...")
     while i <= step:
 
-        print(f"Step {i}")
+        # print(f"Step {i}")
         new_mass = {}
         for isotope, mass in init_mass[-1].items():
 
@@ -140,7 +135,7 @@ if __name__ == '__main__':
     IDBH = jdbh.JsonDbHandler("database/isotope_database.json") # Isotope db handler
     CDBH = jdbh.JsonDbHandler("database/configuration_settings.json") # Config db handler
 
-    # Load config
+    # Load config. db.
     config = CDBH.load() # This is hardcoded
     # Software related data
     SOFTWARE_VERSION = (str(config["program_version_major"]) + "."
@@ -148,13 +143,14 @@ if __name__ == '__main__':
     + str(config["program_version_patch"]) + "."
     + str(config["program_build"]))
     RELEASE_DATE = config["release_date"]
+    l.info(f"{SOFTWARE_VERSION}-{RELEASE_DATE}")
 
-    print(SOFTWARE_VERSION)
-    print(RELEASE_DATE)
-
+    # Load isotope db.
     database = IDBH.load()
 
     main()
+
+    IDBH.dump(database)
 
     # app = QApplication([])
     # app.setStyle('Fusion')

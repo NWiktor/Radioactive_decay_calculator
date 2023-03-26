@@ -46,6 +46,7 @@ class EntryObjectBaseClass():
 #       self.symbol = symbol
 #       self.proton_number = proton_number
 #       self.neutron_number = neutron_number
+#       self.mass_number = proton_number + neutron_number
 #       self.short_id = f"{name}-{proton_number}"
 #       self.decays = {} # dict of dicts - multiple decay is possible, each of them with multiple products
 
