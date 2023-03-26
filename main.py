@@ -74,11 +74,26 @@ def decay(isotope, original_mass, time):
     return products
 
 
-def create_plot_data(mass_distribution, time_step):
+def convert_time_unit(time_step, time_unit):
+
+    if time_unit == "s":
+        return time_step
+    elif time_unit == "min":
+        return time_step/60
+    elif time_unit == "h":
+        return time_step/3600
+    elif time_unit == "d":
+        return time_step/86400
+    elif time_unit == "a":
+        return time_step/31556926
+
+
+def create_plot_data(mass_distribution, time_step, time_unit="s"):
     """  """
 
     i = 0
     data = {}
+    time_step = convert_time_unit(time_step, time_unit)
 
     # Iterate over a specific mass-distribution in a given timestep
     for mix in mass_distribution:
@@ -96,7 +111,7 @@ def create_plot_data(mass_distribution, time_step):
         plt.plot(value["time"], value["mass"], label=f"{isotope}")
 
     plt.title("Radioactive decay")
-    plt.xlabel("Time [s]")
+    plt.xlabel(f"Time [{time_unit}]")
     plt.ylabel("Mass [kg]")
     plt.legend()
     plt.show()
@@ -109,9 +124,9 @@ def main():
     {"Ra-225": 10, "Ac-238": 10} # kg
     ]
 
-    time_step = 100 # second per day: 24*60*60
+    time_step = 50000 # second per day: 24*60*60
     i = 0
-    step = 500
+    step = 150
 
     print("Starting calculation...")
     while i <= step:
@@ -132,7 +147,7 @@ def main():
         init_mass.append(new_mass)
         i += 1
 
-    create_plot_data(init_mass, time_step)
+    create_plot_data(init_mass, time_step, time_unit="d")
 
 
 ### Include guard
