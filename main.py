@@ -16,6 +16,7 @@ Wetzl Viktor - 2023.03.25 - All rights reserved
 
 from fpdf import FPDF
 import matplotlib.pyplot as plt
+from logger import MAIN_LOGGER as l
 
 # pylint: disable = no-name-in-module, unused-import
 from PyQt5.QtWidgets import (QApplication, QWidget, QMenu, QMainWindow,
@@ -27,21 +28,6 @@ from PyQt5.QtCore import (Qt, QRect, QSize)
 
 # Global variables
 RELEASE_DATE = "2023-03-25"
-
-# class Isotope:
-
-#   def __init__(name, proton_number, neutron_number):
-#       self.name = f"{name}-{proton_number}"
-#       self.proton_number = proton_number
-#       self.neutron_number = neutron_number
-#       self.decay_type = None
-#       self.half_life = None
-
-
-# class Decay:
-
-#   def __init__():
-#       pass
 
 
 database = {
