@@ -15,13 +15,17 @@ Wetzl Viktor - 2023.03.25 - All rights reserved
 """
 import sys
 from datetime import date
-from copy import deepcopy
 import webbrowser
 
 from fpdf import FPDF
 import matplotlib.pyplot as plt
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+
 from logger import MAIN_LOGGER as l
 import modules.json_handler as jdbh
+from gui.simulation_widget import SimulationWidget
 
 # pylint: disable = no-name-in-module, unused-import
 from PyQt5.QtWidgets import (QApplication, QWidget, QMenu, QMainWindow,
@@ -33,6 +37,14 @@ from PyQt5.QtCore import (Qt, QRect, QSize)
 
 
 # Class and function definitions
+class MplCanvas(FigureCanvasQTAgg):
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
+
+
 class MainWindow(QMainWindow):
     def __init__(self, IDBH):
         super().__init__(parent=None)
@@ -45,7 +57,6 @@ class MainWindow(QMainWindow):
         self._create_simulation_view() # Create (dock) widget
         self._create_menubar() # Create menu bar
         self._create_plotview() # Create Mathplotlib (central) view
-        # self._update_calendar_view()
         self._create_status_bar() # Create status bar
         self.showMaximized()
 
@@ -103,66 +114,19 @@ class MainWindow(QMainWindow):
     def _create_simulation_view(self):
         self.simulation_view = QDockWidget('Simulation parameters', self)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.simulation_view)
-
-        # self.isotopes_list = {}
-        self.isotopes_list = {"Ra-225": 10, "Ac-225": 10}
-
-        # Add Fields
-        layout = QVBoxLayout()
-        form_layout = QFormLayout()
-        
-        self.interval = QLineEdit(str(500))
-        self.interval.setFixedWidth(70)
-        form_layout.addRow(QLabel("Time interval [s]"), self.interval)
-        self.step_number = QLineEdit(str(15000))
-        self.step_number.setFixedWidth(70)
-        form_layout.addRow(QLabel("Number of steps"), self.step_number)
-        self.isotope_name_cbox = QComboBox()
-        self.isotope_name_cbox.addItems(self._idb.keys())
-        self.isotope_name_cbox.setEditable(False)
-        self.isotope_name_cbox.setFixedWidth(70)
-        self.isotope_name_cbox.setInsertPolicy(QComboBox.InsertAlphabetically)
-        form_layout.addRow(QLabel("Isotope name"), self.isotope_name_cbox)
-
-        self.isotope_mass = QLineEdit(str(""))
-        self.isotope_mass.setFixedWidth(70)
-        form_layout.addRow(QLabel("Isotope mass [kg]"), self.isotope_mass)
-        layout.addLayout(form_layout)
-
-        # Add Buttons
-        button_box = QHBoxLayout()
-        button_accept = QPushButton("Add")
-        button_accept.clicked.connect(self.accept_input)
-        button_box.addWidget(button_accept)
-        button_box.addStretch()
-        layout.addLayout(button_box)
-
-        # Add Listview
-        layout.addWidget(QLabel("Added isotopes"))
-        self.shown_iso_list_widget = QListWidget()
-        for name, mass in self.isotopes_list.items():
-            self.shown_iso_list_widget.addItem(f"{name} - {mass} [kg]")
-        layout.addWidget(self.shown_iso_list_widget)
-
-        layout_widget = QWidget(self)
-        layout_widget.setLayout(layout)
-        self.simulation_view.setWidget(layout_widget)
-
-
-    def accept_input(self):
-        name = self.isotope_name_cbox.currentText().strip()
-        mass = self.isotope_mass.text().strip()
-        self.isotopes_list.update({name: float(mass)})
-
-        self.shown_iso_list_widget.clear()
-
-        for name, mass in self.isotopes_list.items():
-            self.shown_iso_list_widget.addItem(f"{name} - {mass} [kg]")
-        print(self.isotopes_list)
+        self.sim_widget = SimulationWidget(self._idb)
+        self.simulation_view.setWidget(self.sim_widget)
 
 
     def _create_plotview(self):
-        print("Plotview")
+        self.sc = MplCanvas(self, width=5, height=4, dpi=100)
+        self.sc.axes.set_title("Radioactive decay")
+        self.sc.axes.set_xlabel("Time [s]")
+        self.sc.axes.set_ylabel("Mass [kg]")
+        self.sc.axes.set_xlim(0, None)
+        self.sc.axes.set_ylim(0, None)
+        self.sc.axes.grid()
+        self.setCentralWidget(self.sc)
 
 
     def decay_isotope(self, isotope, original_mass, time):
@@ -226,28 +190,29 @@ class MainWindow(QMainWindow):
 
             i += 1
 
-        fig, ax = plt.subplots(1)
+        # Generate plot:
+        self.sc.axes.cla() # Clear existing curves
 
+        # Generate new data plots
         for isotope, value in data.items():
-            ax.plot(value["time"], value["mass"], label=f"{isotope}")
+            self.sc.axes.plot(value["time"], value["mass"], label=f"{isotope}")
 
-        ax.set_title("Radioactive decay")
-        ax.set_xlabel(f"Time [{time_unit}]")
-        ax.set_ylabel("Mass [kg]")
-        ax.set_xlim(0, None)
-        ax.set_ylim(0, None)
-        ax.grid()
-        ax.legend()
-        fig.canvas.manager.set_window_title('Radioactive decay results')
-        plt.show()
+        # Set axis parameters
+        self.sc.axes.set_title("Radioactive decay")
+        self.sc.axes.set_xlabel(f"Time [{time_unit}]")
+        self.sc.axes.set_ylabel("Mass [kg]")
+        self.sc.axes.set_xlim(0, None)
+        self.sc.axes.set_ylim(0, None)
+        self.sc.axes.grid()
+        self.sc.axes.legend()
+        self.sc.draw()
+        self.sc.flush_events()
 
 
     def start_calculation(self):
         """  """
-        init_mass = [deepcopy(self.isotopes_list)] # list of dictionaries
-        time_interval = int(self.interval.text().strip()) # second per day: 24*60*60
-        step = int(self.step_number.text().strip())
-        
+        init_mass, time_interval, step = self.sim_widget.get_simulation_parameters()
+        init_mass = [init_mass] # list of dictionaries
         i = 0
         l.info("Starting decay calculation...")
         while i <= step:
@@ -329,7 +294,7 @@ if __name__ == '__main__':
     main = MainWindow(IDBH)
     main.show()
     l.info("Main window open")
-    main.center()
+    # main.center()
     app.exec()
     l.info("Program exit!")
     sys.exit()
