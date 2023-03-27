@@ -95,9 +95,15 @@ class SimulationWidget(QWidget):
 
     def accept_input(self):
         """  """
-        name = self.isotope_name_cbox.currentText().strip()
-        mass = self.isotope_mass.text().strip()
-        self.isotopes_list.update({name: float(mass)})
+        try:
+            name = self.isotope_name_cbox.currentText().strip()
+            mass = float(self.isotope_mass.text().strip())
+
+        except:
+            l.error("Wrong input for mass value!")
+            return
+
+        self.isotopes_list.update({name: mass})
 
         # Clear listview and repopulate
         self.shown_iso_list_widget.clear()
