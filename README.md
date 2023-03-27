@@ -8,11 +8,11 @@ This is a small tool, for visualizing the decay of various radioactive isotopes 
 The tool uses the exponential decay model and numerical integration for calculating the products
 along the decay chain.
 
-# TODOS:
+# Todos:
 * Implement adding and editing isotopes for the database.
 * Implement raw data exporting.
 * Implement graph tools (set limits, units, etc.)
 * Implement calculation for activity
 
-# USE
+# Use
 The tool can be cloned, and started with the _run_main.bat file (for convenience), or with the main.py directly.
