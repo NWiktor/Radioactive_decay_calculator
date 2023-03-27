@@ -21,33 +21,25 @@ Contents
 
 # Standard library imports
 # First import should be the logging module if any!
-from datetime import date
 
 # Third party imports
 # pylint: disable = no-name-in-module
-from PyQt5.QtWidgets import (
-QDialog, QWidget,
-QFormLayout,
-QCheckBox,
-QLineEdit,
-QVBoxLayout,
-QHBoxLayout,
-QPushButton,
-QComboBox,
-QListWidget,
-QDateEdit,
+from PyQt5.QtWidgets import ( QDialog, QWidget,
+QFormLayout, QCheckBox,QLineEdit, QVBoxLayout,
+QHBoxLayout, QGridLayout, QPushButton, QComboBox,
 QLabel)
-from PyQt5.QtCore import (Qt, QDateTime, QDate)
+from PyQt5.QtCore import Qt
 
 # Local application imports
 from logger import MAIN_LOGGER as l
+from modules.entry_objects import IsotopeEntry
 
 # Class and function definitions
 class CreateIsotopeWindow(QDialog):
     """Project creation window for PyQt5.
 
     """
-    # TODO: implement default data, to fill out the form == this class can be used for editing as well
+    # TODO: implement default data, to fill out the form == this class can be used for editing
     def __init__(self, default_data=None):
         super().__init__(parent=None)
         self.setWindowTitle("Create new isotope")
@@ -55,19 +47,22 @@ class CreateIsotopeWindow(QDialog):
         self.results = None
 
         # Initialize window
-        self.layout = QVBoxLayout()
+        self.layout = QGridLayout()
         self._create_fields()
         self._create_decay_field()
-        self._create_buttons() # OK és Close gombok az ablak alján
+        self._create_buttons()
         self.setLayout(self.layout)
 
 
     def _create_fields(self):
         """  """
+        # header
+        field_layout = QVBoxLayout()
+        field_layout.addWidget(QLabel("Isotope properties"), alignment=Qt.AlignCenter)
 
         # name
         form_layout1 = QFormLayout()
-        isotope_name_label = QLabel("Isotope name")
+        isotope_name_label = QLabel("Isotope name*")
         isotope_name_label.setFixedWidth(135)
         self.isotope_name = QLineEdit("")
         self.isotope_name.setPlaceholderText("e.g. Uranium")
@@ -103,19 +98,24 @@ class CreateIsotopeWindow(QDialog):
         self.reference.setPlaceholderText("(optional)")
         self.reference.setFixedWidth(100)
         form_layout1.addRow(QLabel("Data reference"), self.reference)
-       
+
         # stable
         self.stable = QCheckBox()
         self.stable.setChecked(True)
         form_layout1.addRow(QLabel("Stable isotope?"), self.stable)
         self.stable.stateChanged.connect(self.toggle_decay_field)
-        self.layout.addLayout(form_layout1)
+
+        field_layout.addLayout(form_layout1)
+        field_layout.addStretch()
+        self.layout.addLayout(field_layout, 0, 0)
 
 
     def _create_decay_field(self):
-
+        """  """
+        self.decay_field_list = []
         self.decay_field_widget = QWidget()
         layout2 = QVBoxLayout()
+        layout2.addWidget(QLabel("Isotope decay"), alignment=Qt.AlignCenter)
 
         # Half life
         form_layout2 = QFormLayout()
@@ -125,53 +125,53 @@ class CreateIsotopeWindow(QDialog):
         self.half_life.setPlaceholderText("in seconds")
         self.half_life.setFixedWidth(100)
         form_layout2.addRow(half_life_label, self.half_life)
-
         layout2.addLayout(form_layout2)
-        layout2.addWidget(QLabel("Isotope decay modes"))
 
-        # Generate field for decays        
-        i = 2
-        for i in range(0,2):
+        # Generate field for decays
+        for i in range(0,3):
+            layout2.addWidget(QLabel(f"Decay mode {i+1}"), alignment=Qt.AlignCenter)
             decays_layout = QFormLayout()
 
             # decay_type
             decay_label = QLabel("Decay type")
             decay_label.setFixedWidth(135)
-            self.decay_type = QLineEdit("")
-            self.decay_type.setPlaceholderText("e.g. alpha")
-            self.decay_type.setFixedWidth(100)
-            decays_layout.addRow(decay_label, self.decay_type)
+            decay_type = QLineEdit("")
+            decay_type.setPlaceholderText("e.g. alpha")
+            decay_type.setFixedWidth(100)
+            decays_layout.addRow(decay_label, decay_type)
 
             # product
-            self.product = QLineEdit("")
-            self.product.setPlaceholderText("e.g. U-238")
-            self.product.setFixedWidth(100)
-            decays_layout.addRow(QLabel("Product"), self.product)
+            product = QLineEdit("")
+            product.setPlaceholderText("e.g. U-238")
+            product.setFixedWidth(100)
+            decays_layout.addRow(QLabel("Product"), product)
 
             # probability
-            self.probability = QLineEdit("")
-            self.probability.setPlaceholderText("e.g.: 0.9845")
-            self.probability.setFixedWidth(100)
-            decays_layout.addRow(QLabel("Probability"), self.probability)
+            probability = QLineEdit("")
+            probability.setPlaceholderText("e.g.: 0.9845")
+            probability.setFixedWidth(100)
+            decays_layout.addRow(QLabel("Probability"), probability)
 
             # released_energy
-            self.released_energy = QLineEdit("")
-            self.released_energy.setPlaceholderText("in MeV")
-            self.released_energy.setFixedWidth(100)
-            decays_layout.addRow(QLabel("Released energy"), self.released_energy)
+            released_energy = QLineEdit("")
+            released_energy.setPlaceholderText("in MeV")
+            released_energy.setFixedWidth(100)
+            decays_layout.addRow(QLabel("Released energy"), released_energy)
 
+            self.decay_field_list.append(decays_layout)
             layout2.addLayout(decays_layout)
-        
+
         self.decay_field_widget.setEnabled(False)
         self.decay_field_widget.setLayout(layout2)
-        self.layout.addWidget(self.decay_field_widget)
+        self.layout.addWidget(self.decay_field_widget, 0, 1)
 
 
     def _create_buttons(self):
+        """  """
         # Feedback widget
         self.status_text = QLabel('')
         self.status_text.setStyleSheet("color: red")
-        self.layout.addWidget(self.status_text, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.status_text, 1,0)
 
         # Buttons
         button_box = QHBoxLayout()
@@ -182,7 +182,7 @@ class CreateIsotopeWindow(QDialog):
         button_close.clicked.connect(self.close_window)
         button_box.addWidget(button_accept)
         button_box.addWidget(button_close)
-        self.layout.addLayout(button_box)
+        self.layout.addLayout(button_box, 1, 1)
 
 
     def toggle_decay_field(self):
@@ -190,48 +190,48 @@ class CreateIsotopeWindow(QDialog):
 
 
     def accept_input(self):
-        """Collects the given inputs, and accepts them if all valid.
+        """ Collects the given inputs, and accepts them if all valid. """
 
-        This function collects the inputs from the textboxes, removes leading
-        and trailing whitespaces, and checks if all the required inputs are
-        given. If not, displays warning and returns. If yes, and specified,
-        validates the inputs by calling the validator function.
+        self.status_text.setText("")
 
-        :param event: Empty event to allow binding (default = None).
+        # Read inputs
+        name = self.isotope_name.text().capitalize()
+        symbol = self.symbol.text().capitalize()
+        mass_number = self.mass_number.text()
 
-        """
-        # self.status_text.setText("")
-        # results = {}
-        # project_name = self.project_name.text()
+        # Check mandatory params
+        if name == "":
+            self.status_text.setText("Isotope name is a mandatory parameter!")
+            return
+        if symbol == "":
+            self.status_text.setText("Symbol is a mandatory parameter!")
+            return
+        if mass_number == "":
+            self.status_text.setText("Mass number is a mandatory parameter!")
+            return
 
-        # if project_name == "":
-        #     self.status_text.setText("Project name is a mandatory parameter!")
-        #     return
+        # Fill params into a class
+        new_isotope = IsotopeEntry(name, symbol, mass_number)
+        new_isotope.proton_number = self.proton_number.text()
+        new_isotope.neutron_number = self.neutron_number.text()
+        new_isotope.reference = self.reference.text()
+        # print(new_isotope)
 
-        # results["project_name"] = project_name.capitalize()
-        # results["description"] = self.description.text()
-        # results["start_date"] = self.start_date_edit.text()
-        # results["end_date"] = self.end_date_edit.text()
-        # # TODO: Implement this item
-        # # results["sub_projects"] = self.parent_project_cbox.text()
-        # results["public"] = self.public.isChecked()
+        if not self.stable.isChecked():
+            new_isotope.half_life = self.half_life.text()
+            new_isotope.decays = {}
 
-        # items = []
-        # for i in range(self.project_members_list_widget.count()):
-        #     value = str(self.project_members_list_widget.item(i).text())
-        #     items.append(value)
+            for field_layout in self.decay_field_list:
+                decay_type = field_layout.itemAt(1).widget().text()
+                product = field_layout.itemAt(3).widget().text()
+                probability = field_layout.itemAt(5).widget().text()
+                released_energy = field_layout.itemAt(7).widget().text()
+                new_isotope.decays.update(new_isotope.create_decay(decay_type, product,
+                    probability, released_energy))
 
-        # results["project_members"] = items
-
-        # ### Accept settings
-        # self.results = results # Csak az OK esetén adjuk vissza a beállításokat!
-
-        # selected_parent_project = self.parent_project_cbox.currentText().strip()
-        # if selected_parent_project != "":
-        #     for i in self.projects:
-        #         if i[0] == selected_parent_project:
-        #             self.parent_project = i
-
+        # Accept settings
+        l.info(f"New isotope entry created: {new_isotope.short_id}, contents: {new_isotope}!")
+        self.results = new_isotope.dump() # Csak az OK esetén adjuk vissza a beállításokat!
         self.close_window()
 
 

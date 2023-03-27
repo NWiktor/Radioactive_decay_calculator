@@ -36,21 +36,23 @@ class EntryObjectBaseClass():
 
 
 class IsotopeEntry(EntryObjectBaseClass):
-   """This class is intended to initialize a JSON settings entry."""
+    """ This class is intended to initialize a JSON settings entry. """
 
-    # TODO: Kell ez a fv. ? Összedolgozni a load()-al?
-    def create(self, name, symbol, mass_number, proton_number=None, neutron_number=None):
+    def __init__(self, name, symbol, mass_number):
         """ Create new isotrope entry, with minimum data. """
+        super().__init__()
         self.name = name
         self.symbol = symbol
         self.mass_number = mass_number
-        self.proton_number = proton_number
-        self.neutron_number = neutron_number
-        self.short_id = f"{name}-{mass_number}"
+        self.short_id = f"{symbol}-{mass_number}"
+
+        # Optional parameters
+        self.proton_number = None
+        self.neutron_number = None
         self.reference = None
         self.half_life = None
         self.decays = None # dict of dicts - multiple decay type is possible
-        l.info("Entry created!")
+        l.debug("Entry created!")
 
 
     def load(self, raw_data):
@@ -62,21 +64,22 @@ class IsotopeEntry(EntryObjectBaseClass):
         self.neutron_number = raw_data.get("neutron_number", None)
         self.short_id = raw_data.get("short_id", None)
         self.reference = raw_data.get("reference", None)
-        self.half_life = raw_data.get("half_life", None)
+        self.half_life = float(raw_data.get("half_life", None))
 
         if self.half_life is None:
             self.decays = None
 
         else:
             raw_decay_data = raw_data.get("decays", None)
-            if raw_decay_data is not None
+            if raw_decay_data is not None:
                 self.decays = self._load_decays(raw_decay_data)
+                l.debug("Decays loaded!")
 
             else:
                 l.error("Undefined decay for unstable isotope! Please check input data!")
                 self.decays = None
 
-        l.info("Entry loaded!")
+        l.debug("Entry loaded!")
 
 
     def _load_decays(self, raw_data):
@@ -86,13 +89,12 @@ class IsotopeEntry(EntryObjectBaseClass):
             product = decay_data.get("product", None)
             released_energy = decay_data.get("released_energy", None)
             probability = decay_data.get("probability", 1.0)
-            decays.update(self._create_decay(decay, product, released_energy, probability))
+            decays.update(self.create_decay(decay, product, released_energy, probability))
 
-        self.decays = decays
-        l.info("Decays loaded!")
+        return decays
 
 
-    def _create_decay(self, decay_type, product, probability, released_energy):
+    def create_decay(self, decay_type, product, probability, released_energy):
         """  """
         decay = {decay_type : {
         "product" : product,
