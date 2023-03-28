@@ -194,6 +194,7 @@ class CreateIsotopeWindow(QDialog):
 
         self.status_text.setText("")
 
+        # TODO: move input checks into class!
         # Read inputs
         name = self.isotope_name.text().capitalize().strip()
         symbol = self.symbol.text().capitalize().strip()
