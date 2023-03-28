@@ -24,7 +24,7 @@ Contents
 
 # Third party imports
 # pylint: disable = no-name-in-module
-from PyQt5.QtWidgets import ( QDialog, QWidget,
+from PyQt5.QtWidgets import (QDialog, QWidget,
 QFormLayout, QCheckBox,QLineEdit, QVBoxLayout,
 QHBoxLayout, QGridLayout, QPushButton, QComboBox,
 QLabel)
