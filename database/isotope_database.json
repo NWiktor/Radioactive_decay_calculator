@@ -113,5 +113,27 @@
     "Ti-205": {
         "half_life": null,
         "decays": null
+    },
+    "U-238": {
+        "name": "Uranium",
+        "symbol": "U",
+        "mass_number": "238",
+        "short_id": "U-238",
+        "proton_number": "92",
+        "neutron_number": "146",
+        "reference": "https://en.wikipedia.org/wiki/Uranium-238",
+        "half_life": "1.41e17",
+        "decays": {
+            "alpha": {
+                "product": "Th-234",
+                "probability": "1",
+                "released_energy": "4.267"
+            },
+            "": {
+                "product": "",
+                "probability": "",
+                "released_energy": ""
+            }
+        }
     }
 }
