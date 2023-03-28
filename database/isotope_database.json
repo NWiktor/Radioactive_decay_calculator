@@ -173,12 +173,46 @@
         "proton_number": "92",
         "neutron_number": "142",
         "reference": "https://en.wikipedia.org/wiki/Uranium-234",
-        "half_life": 7.76300379e+12,
+        "half_life": 7763003790000.0,
         "decays": {
             "alpha": {
                 "product": "Th-230",
                 "probability": 1.0,
                 "released_energy": 4.8
+            }
+        }
+    },
+    "Th-230": {
+        "name": "Thorium",
+        "symbol": "Th",
+        "mass_number": "230",
+        "short_id": "Th-230",
+        "proton_number": "90",
+        "neutron_number": "140",
+        "reference": "http://nucleardata.nuclear.lu.se/toi/nuclide.asp?iZA=900230",
+        "half_life": 2378761080000.0,
+        "decays": {
+            "alpha": {
+                "product": "Ra-226",
+                "probability": 1.0,
+                "released_energy": 4.77
+            }
+        }
+    },
+    "Ra-226": {
+        "name": "Radium",
+        "symbol": "Ra",
+        "mass_number": "226",
+        "short_id": "Ra-226",
+        "proton_number": "88",
+        "neutron_number": "",
+        "reference": "https://en.wikipedia.org/wiki/Radium",
+        "half_life": 50459524600.0,
+        "decays": {
+            "alpha": {
+                "product": "Rn-222",
+                "probability": 1.0,
+                "released_energy": null
             }
         }
     }
