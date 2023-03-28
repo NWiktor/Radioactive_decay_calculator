@@ -215,10 +215,9 @@ class CreateIsotopeWindow(QDialog):
         new_isotope.proton_number = self.proton_number.text()
         new_isotope.neutron_number = self.neutron_number.text()
         new_isotope.reference = self.reference.text()
-        # print(new_isotope)
 
         if not self.stable.isChecked():
-            new_isotope.half_life = self.half_life.text()
+            new_isotope.half_life = float(self.half_life.text())
             new_isotope.decays = {}
 
             for field_layout in self.decay_field_list:
