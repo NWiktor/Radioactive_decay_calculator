@@ -22,26 +22,6 @@ import sys
 from logging.handlers import RotatingFileHandler
 
 
-# Ha ez nincs, akkor .exe file nem működik!
-if getattr(sys, 'frozen', False):
-    initdir = os.path.dirname(sys.executable)
-elif __file__:
-    initdir = os.path.dirname(__file__)
-
-LOG_DIRPATH = "log/"
-LOG_FILENAME = "main.txt"
-
-# Ha a naplófájl mappa hiányzik, létrehozom
-if not os.path.isdir(os.path.join(initdir, LOG_DIRPATH)):
-    os.mkdir(os.path.join(initdir, LOG_DIRPATH))
-
-LOG_FILE = os.path.join(initdir, LOG_DIRPATH, LOG_FILENAME)
-FORMATTER = logging.Formatter(
-'%(asctime)s %(module)s [%(levelname)s] : %(message)s',
-datefmt='%Y/%m/%d %H:%M:%S')
-
-MAIN_LOGGER = None
-
 def init_logger():
     """ Initializes a logger named *'Main'* for all modules.
 
@@ -79,8 +59,29 @@ def init_logger():
     MAIN_LOGGER.info("Main logger created!")
 
 
-# Running script:
-init_logger() # Initializes logger for all the modules
+## Running script
+
+# Ha ez nincs, akkor .exe file nem működik!
+if getattr(sys, 'frozen', False):
+    initdir = os.path.dirname(sys.executable)
+elif __file__:
+    initdir = os.path.dirname(__file__)
+
+# Set defaults
+LOG_DIRPATH = "log/"
+LOG_FILENAME = "main.txt"
+MAIN_LOGGER = None
+LOG_FILE = os.path.join(initdir, LOG_DIRPATH, LOG_FILENAME)
+FORMATTER = logging.Formatter(
+'%(asctime)s %(module)s [%(levelname)s] : %(message)s',
+datefmt='%Y/%m/%d %H:%M:%S')
+
+# Ha a naplófájl mappa hiányzik, létrehozom
+if not os.path.isdir(os.path.join(initdir, LOG_DIRPATH)):
+    os.mkdir(os.path.join(initdir, LOG_DIRPATH))
+
+# Initializes logger for all the modules
+init_logger()
 
 
 ## Modul-teszt
