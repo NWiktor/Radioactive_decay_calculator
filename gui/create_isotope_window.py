@@ -85,13 +85,13 @@ class CreateIsotopeWindow(QDialog):
         self.proton_number = QLineEdit("")
         self.proton_number.setPlaceholderText("(optional)")
         self.proton_number.setFixedWidth(100)
-        form_layout1.addRow(QLabel("Proton number"), self.proton_number)
+        form_layout1.addRow(QLabel("Proton number (Z)"), self.proton_number)
 
         # neutron_number
         self.neutron_number = QLineEdit("")
         self.neutron_number.setPlaceholderText("(optional)")
         self.neutron_number.setFixedWidth(100)
-        form_layout1.addRow(QLabel("Neutron number"), self.neutron_number)
+        form_layout1.addRow(QLabel("Neutron number (N)"), self.neutron_number)
 
         # reference
         self.reference = QLineEdit("")
