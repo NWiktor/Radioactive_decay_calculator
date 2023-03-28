@@ -161,7 +161,24 @@
             "beta_minus": {
                 "product": "U-234",
                 "probability": 1.0,
-                "released_energy": 0.0
+                "released_energy": null
+            }
+        }
+    },
+    "U-234": {
+        "name": "Uranium",
+        "symbol": "U",
+        "mass_number": "234",
+        "short_id": "U-234",
+        "proton_number": "92",
+        "neutron_number": "142",
+        "reference": "https://en.wikipedia.org/wiki/Uranium-234",
+        "half_life": 7.76300379e+12,
+        "decays": {
+            "alpha": {
+                "product": "Th-230",
+                "probability": 1.0,
+                "released_energy": 4.8
             }
         }
     }
