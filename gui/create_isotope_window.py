@@ -230,7 +230,7 @@ class CreateIsotopeWindow(QDialog):
                     probability, released_energy))
 
         # Accept settings
-        l.info(f"New isotope entry created: {new_isotope.short_id}, contents: {new_isotope}!")
+        l.info(f"New isotope entry created: {new_isotope.short_id}!")
         self.results = new_isotope.dump() # Csak az OK esetén adjuk vissza a beállításokat!
         self.close_window()
 
