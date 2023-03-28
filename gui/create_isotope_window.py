@@ -195,9 +195,9 @@ class CreateIsotopeWindow(QDialog):
         self.status_text.setText("")
 
         # Read inputs
-        name = self.isotope_name.text().capitalize()
-        symbol = self.symbol.text().capitalize()
-        mass_number = self.mass_number.text()
+        name = self.isotope_name.text().capitalize().strip()
+        symbol = self.symbol.text().capitalize().strip()
+        mass_number = self.mass_number.text().strip()
 
         # Check mandatory params
         if name == "":
@@ -217,15 +217,16 @@ class CreateIsotopeWindow(QDialog):
         new_isotope.reference = self.reference.text()
 
         if not self.stable.isChecked():
-            new_isotope.half_life = float(self.half_life.text())
+            new_isotope.half_life = float(self.half_life.text().replace(" ",""))
             new_isotope.decays = {}
 
             for field_layout in self.decay_field_list:
-                decay_type = field_layout.itemAt(1).widget().text()
-                product = field_layout.itemAt(3).widget().text()
-                probability = field_layout.itemAt(5).widget().text()
-                released_energy = field_layout.itemAt(7).widget().text()
-                new_isotope.decays.update(new_isotope.create_decay(decay_type, product,
+                decay_type = field_layout.itemAt(1).widget().text().strip()
+                if decay_type != "":
+                    product = field_layout.itemAt(3).widget().text().strip()
+                    probability = field_layout.itemAt(5).widget().text().replace(" ","")
+                    released_energy = field_layout.itemAt(7).widget().text().replace(" ","")
+                    new_isotope.decays.update(new_isotope.create_decay(decay_type, product,
                     probability, released_energy))
 
         # Accept settings
