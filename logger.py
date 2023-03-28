@@ -8,7 +8,8 @@ Help
 ----
 * https://www.toptal.com/python/in-depth-python-logging
 * https://stackoverflow.com/questions/15727420/using-logging-in-multiple-modules
-* https://stackoverflow.com/questions/404744/determining-application-path-in-a-python-exe-generated-by-pyinstaller
+* https://stackoverflow.com/questions/404744/determining-application-path-in-a-python-\
+exe-generated-by-pyinstaller
 
 Contents
 --------
