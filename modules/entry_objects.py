@@ -98,8 +98,8 @@ class IsotopeEntry(EntryObjectBaseClass):
         """  """
         decay = {decay_type : {
         "product" : product,
-        "probability": probability,
-        "released_energy" : released_energy
+        "probability": float(probability),
+        "released_energy" : float(released_energy)
         }}
         return decay
 
