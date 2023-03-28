@@ -142,14 +142,9 @@
         "half_life": 2082240.0,
         "decays": {
             "beta_minus": {
-                "product": "Pt-234",
-                "probability": "1",
-                "released_energy": "0.270"
-            },
-            "": {
-                "product": "",
-                "probability": "",
-                "released_energy": ""
+                "product": "Pa-234",
+                "probability": 1,
+                "released_energy": 0.270
             }
         }
     }
