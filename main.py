@@ -18,16 +18,9 @@ from datetime import date
 import webbrowser
 
 from fpdf import FPDF
-import matplotlib.pyplot as plt
-
+# import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-
-from logger import MAIN_LOGGER as l
-import modules.json_handler as jdbh
-from gui.simulation_widget import SimulationWidget
-from gui.create_isotope_window import CreateIsotopeWindow
-
 # pylint: disable = no-name-in-module, unused-import
 from PyQt5.QtWidgets import (QApplication, QWidget, QMenu, QMainWindow,
 QAction, QGridLayout, QVBoxLayout, QHBoxLayout, QDesktopWidget, QPushButton,
@@ -35,6 +28,11 @@ QMessageBox, QFormLayout, QLineEdit, QInputDialog, QDockWidget, QListWidget,
 QTreeWidgetItem, QTreeWidget, QSizePolicy, QLabel, QSpacerItem, QComboBox)
 from PyQt5.QtGui import (QFont, QPainter, QBrush, QColor, QFontMetrics)
 from PyQt5.QtCore import (Qt, QRect, QSize)
+
+from logger import MAIN_LOGGER as l
+import modules.json_handler as jdbh
+from gui.simulation_widget import SimulationWidget
+from gui.create_isotope_window import CreateIsotopeWindow
 
 
 # Class and function definitions
@@ -47,11 +45,11 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, IDBH):
+    def __init__(self, isotope_database_handler):
         super().__init__(parent=None)
 
         # Load isotope db.
-        self._idb = IDBH.load()
+        self._idb = isotope_database_handler.load()
 
         # Create GUI
         self.setWindowTitle(f"Radioactive Decay Calculator App - {date.today()}")
@@ -129,26 +127,26 @@ class MainWindow(QMainWindow):
 
 
     def _create_plotview(self):
-        self.sc = MplCanvas(self, width=5, height=4, dpi=100)
-        self.sc.axes.set_title("Radioactive decay")
-        self.sc.axes.set_xlabel("Time [s]")
-        self.sc.axes.set_ylabel("Mass [kg]")
-        self.sc.axes.set_xlim(0, None)
-        self.sc.axes.set_ylim(0, None)
-        self.sc.axes.grid()
-        self.setCentralWidget(self.sc)
+        self.graph = MplCanvas(self, width=5, height=4, dpi=100)
+        self.graph.axes.set_title("Radioactive decay")
+        self.graph.axes.set_xlabel("Time [s]")
+        self.graph.axes.set_ylabel("Mass [kg]")
+        self.graph.axes.set_xlim(0, None)
+        self.graph.axes.set_ylim(0, None)
+        self.graph.axes.grid()
+        self.setCentralWidget(self.graph)
 
 
     def _clear_plotview(self):
-        self.sc.axes.cla() # Clear existing curves
-        self.sc.axes.set_title("Radioactive decay")
-        self.sc.axes.set_xlabel("Time [s]")
-        self.sc.axes.set_ylabel("Mass [kg]")
-        self.sc.axes.set_xlim(0, None)
-        self.sc.axes.set_ylim(0, None)
-        self.sc.axes.grid()
-        self.sc.draw()
-        self.sc.flush_events()
+        self.graph.axes.cla() # Clear existing curves
+        self.graph.axes.set_title("Radioactive decay")
+        self.graph.axes.set_xlabel("Time [s]")
+        self.graph.axes.set_ylabel("Mass [kg]")
+        self.graph.axes.set_xlim(0, None)
+        self.graph.axes.set_ylim(0, None)
+        self.graph.axes.grid()
+        self.graph.draw()
+        self.graph.flush_events()
 
 
     def add_entry(self):
@@ -230,22 +228,22 @@ class MainWindow(QMainWindow):
             i += 1
 
         # Generate plot:
-        self.sc.axes.cla() # Clear existing curves
+        self.graph.axes.cla() # Clear existing curves
 
         # Generate new data plots
         for isotope, value in data.items():
-            self.sc.axes.plot(value["time"], value["mass"], label=f"{isotope}")
+            self.graph.axes.plot(value["time"], value["mass"], label=f"{isotope}")
 
         # Set axis parameters
-        self.sc.axes.set_title("Radioactive decay")
-        self.sc.axes.set_xlabel(f"Time [{time_unit}]")
-        self.sc.axes.set_ylabel("Mass [kg]")
-        self.sc.axes.set_xlim(0, None)
-        self.sc.axes.set_ylim(0, None)
-        self.sc.axes.grid()
-        self.sc.axes.legend()
-        self.sc.draw()
-        self.sc.flush_events()
+        self.graph.axes.set_title("Radioactive decay")
+        self.graph.axes.set_xlabel(f"Time [{time_unit}]")
+        self.graph.axes.set_ylabel("Mass [kg]")
+        self.graph.axes.set_xlim(0, None)
+        self.graph.axes.set_ylim(0, None)
+        self.graph.axes.grid()
+        self.graph.axes.legend()
+        self.graph.draw()
+        self.graph.flush_events()
 
 
     def start_calculation(self):
