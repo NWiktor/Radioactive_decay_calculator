@@ -215,5 +215,44 @@
                 "released_energy": null
             }
         }
+    },
+    "Rn-222": {
+        "name": "Radon",
+        "symbol": "Rn",
+        "mass_number": "222",
+        "short_id": "Rn-222",
+        "proton_number": "86",
+        "neutron_number": "136",
+        "reference": "https://en.wikipedia.org/wiki/Radon-222",
+        "half_life": 330178.0,
+        "decays": {
+            "alpha": {
+                "product": "Po-218",
+                "probability": 1.0,
+                "released_energy": 5.5904
+            }
+        }
+    },
+    "Po-218": {
+        "name": "Polonium",
+        "symbol": "Po",
+        "mass_number": "218",
+        "short_id": "Po-218",
+        "proton_number": "84",
+        "neutron_number": "134",
+        "reference": "https://en.wikipedia.org/wiki/Isotopes_of_polonium#Polonium-218",
+        "half_life": 186.0,
+        "decays": {
+            "alpha": {
+                "product": "Pb-214",
+                "probability": 0.9998,
+                "released_energy": null
+            },
+            "beta_minus": {
+                "product": "At-218",
+                "probability": 0.0002,
+                "released_energy": null
+            }
+        }
     }
 }
