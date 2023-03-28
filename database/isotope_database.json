@@ -144,7 +144,24 @@
             "beta_minus": {
                 "product": "Pa-234",
                 "probability": 1,
-                "released_energy": 0.270
+                "released_energy": 0.27
+            }
+        }
+    },
+    "Pa-234": {
+        "name": "Protactinium",
+        "symbol": "Pa",
+        "mass_number": "234",
+        "short_id": "Pa-234",
+        "proton_number": "91",
+        "neutron_number": "",
+        "reference": "https://en.wikipedia.org/wiki/Protactinium",
+        "half_life": 24120.0,
+        "decays": {
+            "beta_minus": {
+                "product": "U-234",
+                "probability": 1.0,
+                "released_energy": 0.0
             }
         }
     }
