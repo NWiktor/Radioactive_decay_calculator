@@ -130,5 +130,27 @@
                 "released_energy": 4.267
             }
         }
+    },
+    "Th-234": {
+        "name": "Thorium",
+        "symbol": "Th",
+        "mass_number": "234",
+        "short_id": "Th-234",
+        "proton_number": "90",
+        "neutron_number": "144",
+        "reference": "https://en.wikipedia.org/wiki/Isotopes_of_thorium#Thorium-234",
+        "half_life": 2082240.0,
+        "decays": {
+            "beta_minus": {
+                "product": "Pt-234",
+                "probability": "1",
+                "released_energy": "0.270"
+            },
+            "": {
+                "product": "",
+                "probability": "",
+                "released_energy": ""
+            }
+        }
     }
 }
