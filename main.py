@@ -45,11 +45,12 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, isotope_database_handler):
+    def __init__(self, idbh):
         super().__init__(parent=None)
 
         # Load isotope db.
-        self._idb = isotope_database_handler.load()
+        self._idbh = idbh
+        self.isotope_database = self._idbh.load()
 
         # Create GUI
         self.setWindowTitle(f"Radioactive Decay Calculator App - {date.today()}")
@@ -122,7 +123,7 @@ class MainWindow(QMainWindow):
     def _create_simulation_view(self):
         self.simulation_view = QDockWidget('Simulation parameters', self)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.simulation_view)
-        self.sim_widget = SimulationWidget(self._idb)
+        self.sim_widget = SimulationWidget(self.isotope_database)
         self.simulation_view.setWidget(self.sim_widget)
 
 
@@ -156,10 +157,12 @@ class MainWindow(QMainWindow):
 
         # Process results
         if create_new_isotope_w.results is not None:
-            print("something")
+            print(create_new_isotope_w.results)
+            self.isotope_database.update(create_new_isotope_w.results)
+            self.save_database()
 
         else:
-            print("no something")
+            l.info("Add entry aborted by user")
 
 
     def edit_entry(self):
@@ -168,8 +171,8 @@ class MainWindow(QMainWindow):
 
     def decay_isotope(self, isotope, original_mass, time):
         """  """
-        data = self._idb[isotope].get("decays", None)
-        half_life = self._idb[isotope].get("half_life", None)
+        data = self.isotope_database[isotope].get("decays", None)
+        half_life = self.isotope_database[isotope].get("half_life", None)
         products = []
 
         # Stable isotope
@@ -304,7 +307,12 @@ class MainWindow(QMainWindow):
         # webbrowser.open('https://c3d.hu/')
 
 
+    def save_database(self):
+        self.isotope_database.dump(self.isotope_database)
+
+
     def close_window(self):
+        self.save_database()
         self.close()
         l.info("Main window terminated!")
 
