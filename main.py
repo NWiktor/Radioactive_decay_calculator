@@ -158,7 +158,8 @@ class MainWindow(QMainWindow):
         # Process results
         if create_new_isotope_w.results is not None:
             print(create_new_isotope_w.results)
-            self.isotope_database.update(create_new_isotope_w.results)
+            iid = create_new_isotope_w.results["short_id"]
+            self.isotope_database.update({iid: create_new_isotope_w.results})
             self.save_database()
 
         else:
@@ -308,7 +309,7 @@ class MainWindow(QMainWindow):
 
 
     def save_database(self):
-        self.isotope_database.dump(self.isotope_database)
+        self._idbh.dump(self.isotope_database)
 
 
     def close_window(self):
