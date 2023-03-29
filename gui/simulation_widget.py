@@ -109,7 +109,7 @@ class SimulationWidget(QWidget):
             menu = QMenu()
             menu.addAction('Delete')
             # menu.addAction('Action 2')
-            
+
             if menu.exec_(event.globalPos()):
                 item = source.itemAt(event.pos())
                 key = (item.text().split(" ")[0])

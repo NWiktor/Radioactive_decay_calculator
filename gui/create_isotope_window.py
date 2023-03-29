@@ -189,12 +189,13 @@ class CreateIsotopeWindow(QDialog):
         self.layout.addLayout(button_box, 1, 1)
 
 
+    # pylint: disable = missing-function-docstring
     def toggle_decay_field(self):
         self.decay_field_widget.setEnabled(not self.stable.isChecked())
 
 
     def add_default_values(self, defaults):
-        """  """
+        """ Fills fields with default values. """
         self.isotope_name.setText(defaults["name"])
         self.isotope_symbol.setText(defaults["symbol"])
         self.mass_number.setText(str(defaults["mass_number"]))
@@ -206,14 +207,14 @@ class CreateIsotopeWindow(QDialog):
             self.stable.setChecked(False)
             self.half_life.setText(str(defaults["half_life"]))
 
-            n = 0
-            for iid, decay in defaults["decays"].items():
-                decay_field = self.decay_field_list[n]
-                decay_field.itemAt(1).widget().setCurrentText(iid)
+            step = 0
+            for isotope, decay in defaults["decays"].items():
+                decay_field = self.decay_field_list[step]
+                decay_field.itemAt(1).widget().setCurrentText(isotope)
                 decay_field.itemAt(3).widget().setText(decay.get("product", ""))
                 decay_field.itemAt(5).widget().setText(str(decay.get("probability", "")))
                 decay_field.itemAt(7).widget().setText(str(decay.get("released_energy", "")))
-                n += 1
+                step += 1
 
 
     def accept_input(self):
@@ -262,7 +263,7 @@ class CreateIsotopeWindow(QDialog):
         self.results = new_isotope.dump() # Csak az OK esetén adjuk vissza a beállításokat!
         self.close_window()
 
-
+    # pylint: disable = missing-function-docstring
     def close_window(self):
         self.close()
 
