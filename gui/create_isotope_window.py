@@ -135,8 +135,11 @@ class CreateIsotopeWindow(QDialog):
             # decay_type
             decay_label = QLabel("Decay type")
             decay_label.setFixedWidth(135)
-            decay_type = QLineEdit("")
-            decay_type.setPlaceholderText("e.g. alpha")
+            decay_type = QComboBox()
+            # TODO: Add decay types!
+            decay_type.addItems(["", "alpha", "beta_minus", "gamma"])
+            decay_type.setEditable(False)
+            decay_type.setInsertPolicy(QComboBox.InsertAlphabetically)
             decay_type.setFixedWidth(100)
             decays_layout.addRow(decay_label, decay_type)
 

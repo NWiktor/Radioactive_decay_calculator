@@ -41,7 +41,9 @@ class SimulationWidget(QWidget):
         super().__init__()
 
         # Initialize window
+        # TODO: enable it in production code:
         # self.isotopes_list = {}
+        # TODO: remove this from production code:
         self.isotopes_list = {"Ra-225": 10, "Ac-225": 10}
         self._idb = idb
 
@@ -95,7 +97,6 @@ class SimulationWidget(QWidget):
         self.layout.addWidget(self.shown_iso_list_widget)
 
 
-    # New function
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.shown_iso_list_widget:
             menu = QMenu()
@@ -128,7 +129,7 @@ class SimulationWidget(QWidget):
 
 
     def refresh_listview(self):
-        # Clear listview and repopulate
+        """ Clear listview and repopulate. """
         self.shown_iso_list_widget.clear()
         for name, mass in self.isotopes_list.items():
             self.shown_iso_list_widget.addItem(f"{name} - {mass} [kg]")
