@@ -43,7 +43,6 @@ class CreateIsotopeWindow(QDialog):
     def __init__(self, default_data=None):
         super().__init__(parent=None)
         self.setWindowTitle("Create new isotope")
-        self.default_data = default_data
         self.results = None
 
         # Initialize window
@@ -51,6 +50,8 @@ class CreateIsotopeWindow(QDialog):
         self._create_fields()
         self._create_decay_field()
         self._create_buttons()
+        if default_data is not None:
+            self.add_default_values(default_data)
         self.setLayout(self.layout)
 
 
@@ -70,10 +71,10 @@ class CreateIsotopeWindow(QDialog):
         form_layout1.addRow(isotope_name_label, self.isotope_name)
 
         # symbol
-        self.symbol = QLineEdit("")
-        self.symbol.setPlaceholderText("e.g. U")
-        self.symbol.setFixedWidth(100)
-        form_layout1.addRow(QLabel("Symbol*"), self.symbol)
+        self.isotope_symbol = QLineEdit("")
+        self.isotope_symbol.setPlaceholderText("e.g. U")
+        self.isotope_symbol.setFixedWidth(100)
+        form_layout1.addRow(QLabel("Symbol*"), self.isotope_symbol)
 
         # mass_number
         self.mass_number = QLineEdit("")
@@ -192,6 +193,29 @@ class CreateIsotopeWindow(QDialog):
         self.decay_field_widget.setEnabled(not self.stable.isChecked())
 
 
+    def add_default_values(self, defaults):
+        """  """
+        self.isotope_name.setText(defaults["name"])
+        self.isotope_symbol.setText(defaults["symbol"])
+        self.mass_number.setText(str(defaults["mass_number"]))
+        self.proton_number.setText(str(defaults.get("proton_number", "")))
+        self.neutron_number.setText(str(defaults.get("neutron_number", "")))
+        self.reference.setText(defaults.get("reference", ""))
+
+        if defaults["half_life"] is not None:
+            self.stable.setChecked(False)
+            self.half_life.setText(str(defaults["half_life"]))
+
+            n = 0
+            for iid, decay in defaults["decays"].items():
+                decay_field = self.decay_field_list[n]
+                decay_field.itemAt(1).widget().setCurrentText(iid)
+                decay_field.itemAt(3).widget().setText(decay.get("product", ""))
+                decay_field.itemAt(5).widget().setText(str(decay.get("probability", "")))
+                decay_field.itemAt(7).widget().setText(str(decay.get("released_energy", "")))
+                n += 1
+
+
     def accept_input(self):
         """ Collects the given inputs, and accepts them if all valid. """
 
@@ -200,7 +224,7 @@ class CreateIsotopeWindow(QDialog):
         # TODO: move input checks into class!
         # Read inputs
         name = self.isotope_name.text().capitalize().strip()
-        symbol = self.symbol.text().capitalize().strip()
+        symbol = self.isotope_symbol.text().capitalize().strip()
         mass_number = self.mass_number.text().strip()
 
         # Check mandatory params
