@@ -26,8 +26,9 @@ from copy import deepcopy
 # Third party imports
 # pylint: disable = no-name-in-module
 from PyQt5.QtWidgets import (QWidget,
-QFormLayout, QLineEdit, QVBoxLayout, QHBoxLayout,
+QFormLayout, QLineEdit, QVBoxLayout, QHBoxLayout, QMenu,
 QPushButton, QComboBox, QListWidget, QLabel)
+from PyQt5.QtCore import QEvent, Qt
 
 # Local application imports
 from logger import MAIN_LOGGER as l
@@ -86,11 +87,30 @@ class SimulationWidget(QWidget):
 
     def _create_listview(self):
         """  """
-        self.layout.addWidget(QLabel("Added isotopes"))
+        self.layout.addWidget(QLabel("Starting isotopes"))
         self.shown_iso_list_widget = QListWidget()
         for name, mass in self.isotopes_list.items():
             self.shown_iso_list_widget.addItem(f"{name} - {mass} [kg]")
+        self.shown_iso_list_widget.installEventFilter(self)
         self.layout.addWidget(self.shown_iso_list_widget)
+
+
+    # New function
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.ContextMenu and source is self.shown_iso_list_widget:
+            menu = QMenu()
+            menu.addAction('Delete')
+            # menu.addAction('Action 2')
+            #menu.addAction('Action 3')
+
+            if menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                key = (item.text().split(" ")[0])
+                self.isotopes_list.pop(key)
+                self.refresh_listview()
+
+            return True
+        return super().eventFilter(source, event)
 
 
     def accept_input(self):
@@ -104,7 +124,10 @@ class SimulationWidget(QWidget):
             return
 
         self.isotopes_list.update({name: mass})
+        self.refresh_listview()
 
+
+    def refresh_listview(self):
         # Clear listview and repopulate
         self.shown_iso_list_widget.clear()
         for name, mass in self.isotopes_list.items():
