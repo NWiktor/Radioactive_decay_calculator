@@ -10,11 +10,15 @@ along the decay chain. This is how it looks:
 ## Project status
 The tool is currently in development, but the core is already functional.
 
-## Todos:
-* Implement adding and editing isotopes for the database.
+## Todos
+* Populate database
+* Listing and editing isotopes for the database.
+* Settings for stop isotope (where the decay chain calculation stops).
+* Advanced search field for adding isotopes instead of the Combobox.
+* Add option to normalize and visualize decay product yield (0-100 % mass).
 * Implement raw data exporting.
-* Implement graph tools (set limits, units, etc.)
-* Implement calculation for activity
+* Implement more graph options (set limits, units, etc)
+* Implement calculation for activity.
 
 ## Use
 The tool can be cloned, and started with the _run_main.bat file (for convenience), or with the main.py directly.
