@@ -3,7 +3,9 @@ Hello!
 
 This is a small tool, for visualizing the decay of various radioactive isotopes against time.
 The tool uses the exponential decay model and numerical integration for calculating the products
-along the decay chain.
+along the decay chain. This is how it looks:
+
+![Main menu view](https://github.com/NWiktor/Radioactive_decay_calculator/blob/main/pictures/github_promo.jpg?raw=true)
 
 ## Project status
 The tool is currently in development, but the core is already functional.
