@@ -25,10 +25,10 @@ from copy import deepcopy
 
 # Third party imports
 # pylint: disable = no-name-in-module
-from PyQt5.QtWidgets import (QWidget,
+from PyQt5.QtWidgets import (QWidget, QCompleter,
 QFormLayout, QLineEdit, QVBoxLayout, QHBoxLayout, QMenu,
 QPushButton, QComboBox, QListWidget, QLabel)
-from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtCore import QEvent
 
 # Local application imports
 from logger import MAIN_LOGGER as l
@@ -57,20 +57,27 @@ class SimulationWidget(QWidget):
 
     def _create_fields(self):
         """  """
+        # Time interval
         form_layout = QFormLayout()
         self.interval = QLineEdit(str(500))
         self.interval.setFixedWidth(70)
         form_layout.addRow(QLabel("Time interval [s]"), self.interval)
+
+        # Step number
         self.step_number = QLineEdit(str(15000))
         self.step_number.setFixedWidth(70)
         form_layout.addRow(QLabel("Number of steps"), self.step_number)
+
+        # Isotope name Cbox
         self.isotope_name_cbox = QComboBox()
-        self.isotope_name_cbox.addItems(self._idb.keys())
-        self.isotope_name_cbox.setEditable(False)
+        self.isotope_name_cbox.addItems(sorted(self._idb.keys()))
         self.isotope_name_cbox.setFixedWidth(70)
-        self.isotope_name_cbox.setInsertPolicy(QComboBox.InsertAlphabetically)
+        self.isotope_name_cbox.setEditable(True)
+        self.isotope_name_cbox.completer().setCompletionMode(QCompleter.PopupCompletion)
+        self.isotope_name_cbox.setInsertPolicy(QComboBox.NoInsert)
         form_layout.addRow(QLabel("Isotope name"), self.isotope_name_cbox)
 
+        # Isotope mass
         self.isotope_mass = QLineEdit(str(""))
         self.isotope_mass.setFixedWidth(70)
         form_layout.addRow(QLabel("Isotope mass [kg]"), self.isotope_mass)
@@ -102,8 +109,7 @@ class SimulationWidget(QWidget):
             menu = QMenu()
             menu.addAction('Delete')
             # menu.addAction('Action 2')
-            #menu.addAction('Action 3')
-
+            
             if menu.exec_(event.globalPos()):
                 item = source.itemAt(event.pos())
                 key = (item.text().split(" ")[0])
