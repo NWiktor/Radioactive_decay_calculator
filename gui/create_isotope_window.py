@@ -79,7 +79,7 @@ class ChooseIsotopeWindow(QDialog):
 
 
     def accept_input(self):
-        name = self.isotope_name_cbox.currentText().strip()
+        name = self.isotope_name_cbox.currentText()
         self.results = name
         self.close()
 
@@ -303,7 +303,7 @@ class CreateIsotopeWindow(QDialog):
             new_isotope.decays = {}
 
             for field_layout in self.decay_field_list:
-                decay_type = field_layout.itemAt(1).widget().text().strip()
+                decay_type = field_layout.itemAt(1).widget().currentText()
                 if decay_type != "":
                     product = field_layout.itemAt(3).widget().text().strip()
                     probability = field_layout.itemAt(5).widget().text().replace(" ","")
