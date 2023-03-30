@@ -249,6 +249,10 @@ class CreateIsotopeWindow(QDialog):
 
     def add_default_values(self, defaults):
         """ Fills fields with default values. """
+        short_id = defaults.get("short_id", "")
+        self.setWindowTitle(f"Edit isotope - {short_id}")
+
+        # Set values
         self.isotope_name.setText(defaults.get("name", ""))
         self.isotope_symbol.setText(defaults.get("symbol", ""))
         self.mass_number.setText(str(defaults.get("mass_number", "")))
