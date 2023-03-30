@@ -32,7 +32,7 @@ from PyQt5.QtCore import (Qt, QRect, QSize)
 from logger import MAIN_LOGGER as l
 import modules.json_handler as jdbh
 from gui.simulation_widget import SimulationWidget
-from gui.create_isotope_window import CreateIsotopeWindow
+from gui.create_isotope_window import CreateIsotopeWindow, ChooseIsotopeWindow
 
 
 # Class and function definitions
@@ -150,24 +150,29 @@ class MainWindow(QMainWindow):
         self.graph.flush_events()
 
 
-    def add_entry(self):
+    def edit_entry(self):
         """  """
-        create_new_isotope_w = CreateIsotopeWindow()
+        choose_isotope_w = ChooseIsotopeWindow(self.isotope_database.keys())
+        choose_isotope_w.exec_()
+
+        if choose_isotope_w.results is not None:
+            iid = choose_isotope_w.results
+            self.add_entry(self.isotope_database[iid])
+
+
+    def add_entry(self, default_data=None):
+        """  """
+        create_new_isotope_w = CreateIsotopeWindow(default_data)
         create_new_isotope_w.exec_()
 
         # Process results
         if create_new_isotope_w.results is not None:
-            print(create_new_isotope_w.results)
             iid = create_new_isotope_w.results["short_id"]
             self.isotope_database.update({iid: create_new_isotope_w.results})
             self.save_database()
 
         else:
             l.info("Add entry aborted by user")
-
-
-    def edit_entry(self):
-        print("Edit")
 
 
     def decay_isotope(self, isotope, original_mass, time):

@@ -27,19 +27,73 @@ Contents
 from PyQt5.QtWidgets import (QDialog, QWidget,
 QFormLayout, QCheckBox,QLineEdit, QVBoxLayout,
 QHBoxLayout, QGridLayout, QPushButton, QComboBox,
-QLabel)
+QLabel, QCompleter)
 from PyQt5.QtCore import Qt
 
 # Local application imports
 from logger import MAIN_LOGGER as l
 from modules.entry_objects import IsotopeEntry
 
+
+class ChooseIsotopeWindow(QDialog):
+    """ Isotope combobox window for PyQt5.
+    """
+
+    def __init__(self, keys):
+        super().__init__(parent=None)
+        self.setWindowTitle("Choose isotope")
+        self.keys = keys
+        self.results = None
+
+        # Initialize window
+        self.layout = QVBoxLayout()
+        self._create_fields()
+        self._create_buttons()
+        self.setLayout(self.layout)
+
+
+    def _create_fields(self):
+        """  """
+        form_layout = QFormLayout()
+        self.isotope_name_cbox = QComboBox() # Isotope name Cbox
+        self.isotope_name_cbox.addItems(sorted(self.keys))
+        self.isotope_name_cbox.setFixedWidth(70)
+        self.isotope_name_cbox.setEditable(True)
+        self.isotope_name_cbox.completer().setCompletionMode(QCompleter.PopupCompletion)
+        self.isotope_name_cbox.setInsertPolicy(QComboBox.NoInsert)
+        form_layout.addRow(QLabel("Choose to edit:"), self.isotope_name_cbox)
+        self.layout.addLayout(form_layout)
+
+
+    def _create_buttons(self):
+        """  """
+        button_box = QHBoxLayout()
+        button_box.addStretch()
+        button_accept = QPushButton("OK")
+        button_accept.clicked.connect(self.accept_input)
+        button_close = QPushButton("Cancel")
+        button_close.clicked.connect(self.close_window)
+        button_box.addWidget(button_accept)
+        button_box.addWidget(button_close)
+        self.layout.addLayout(button_box)
+
+
+    def accept_input(self):
+        name = self.isotope_name_cbox.currentText().strip()
+        self.results = name
+        self.close()
+
+
+    # pylint: disable = missing-function-docstring
+    def close_window(self):
+        self.close()
+
+
 # Class and function definitions
 class CreateIsotopeWindow(QDialog):
-    """Project creation window for PyQt5.
-
+    """Isotope creation window for PyQt5.
     """
-    # TODO: implement default data, to fill out the form == this class can be used for editing
+
     def __init__(self, default_data=None):
         super().__init__(parent=None)
         self.setWindowTitle("Create new isotope")
@@ -137,7 +191,6 @@ class CreateIsotopeWindow(QDialog):
             decay_label = QLabel("Decay type")
             decay_label.setFixedWidth(135)
             decay_type = QComboBox()
-            # TODO: Add decay types!
             decay_type.addItems(["", "alpha", "beta_minus", "gamma"])
             decay_type.setEditable(False)
             decay_type.setInsertPolicy(QComboBox.InsertAlphabetically)
@@ -196,9 +249,9 @@ class CreateIsotopeWindow(QDialog):
 
     def add_default_values(self, defaults):
         """ Fills fields with default values. """
-        self.isotope_name.setText(defaults["name"])
-        self.isotope_symbol.setText(defaults["symbol"])
-        self.mass_number.setText(str(defaults["mass_number"]))
+        self.isotope_name.setText(defaults.get("name", ""))
+        self.isotope_symbol.setText(defaults.get("symbol", ""))
+        self.mass_number.setText(str(defaults.get("mass_number", "")))
         self.proton_number.setText(str(defaults.get("proton_number", "")))
         self.neutron_number.setText(str(defaults.get("neutron_number", "")))
         self.reference.setText(defaults.get("reference", ""))
