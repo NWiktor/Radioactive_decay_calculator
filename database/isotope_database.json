@@ -1,10 +1,18 @@
 {
     "Ra-225": {
-        "half_life": 1287360,
+        "name": "Radium",
+        "symbol": "Ra",
+        "mass_number": "225",
+        "short_id": "Ra-225",
+        "proton_number": "88",
+        "neutron_number": "137",
+        "reference": "https://en.wikipedia.org/wiki/Isotopes_of_radium#Radium-225",
+        "half_life": 1287360.0,
         "decays": {
             "beta_minus": {
                 "product": "Ac-225",
-                "probability": 1.0
+                "probability": 1.0,
+                "released_energy": 0.0
             }
         }
     },

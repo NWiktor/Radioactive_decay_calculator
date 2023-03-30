@@ -89,7 +89,7 @@ class IsotopeEntry(EntryObjectBaseClass):
             product = decay_data.get("product")
             rel_eng = decay_data.get("released_energy", "")
             if rel_eng == "":
-                released_energy = None
+                released_energy = 0
             else:
                 released_energy = float(rel_eng)
             probability = float(decay_data.get("probability", 1.0))
