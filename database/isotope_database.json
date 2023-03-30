@@ -9,11 +9,19 @@
         }
     },
     "Ac-225": {
-        "half_life": 860000,
+        "name": "Actinium",
+        "symbol": "Ac",
+        "mass_number": "225",
+        "short_id": "Ac-225",
+        "proton_number": "89",
+        "neutron_number": "136",
+        "reference": "https://en.wikipedia.org/wiki/Actinium-225",
+        "half_life": 857088.0,
         "decays": {
             "alpha": {
                 "product": "Fr-221",
-                "probability": 1.0
+                "probability": 1.0,
+                "released_energy": 5.9351
             }
         }
     },
