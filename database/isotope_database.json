@@ -26,15 +26,24 @@
         }
     },
     "Fr-221": {
-        "half_life": 288,
+        "name": "Francium",
+        "symbol": "Fr",
+        "mass_number": "221",
+        "short_id": "Fr-221",
+        "proton_number": "87",
+        "neutron_number": "134",
+        "reference": "https://en.wikipedia.org/wiki/Isotopes_of_francium#Francium-221",
+        "half_life": 288.0,
         "decays": {
             "alpha": {
                 "product": "At-217",
-                "probability": 0.999952
+                "probability": 0.999952,
+                "released_energy": 0.0
             },
             "beta_minus": {
                 "product": "Ra-221",
-                "probability": 4.8e-05
+                "probability": 4.8e-05,
+                "released_energy": 0.0
             }
         }
     },
