@@ -51,6 +51,26 @@ class TestInputValidatorBaseClass(unittest.TestCase):
           self.assertEqual(valid_class.fval("1 000 000")[0], 1000000, "Should be 1000000")
           self.assertEqual(valid_class.fval(200)[0], 200, "Should be 200")
           self.assertEqual(valid_class.fval(200.0)[0], 200, "Should be 200.0")
+          self.assertEqual(valid_class.fval(4e+3)[0], 4000, "Should be 4000")
+
+
+     def test_sval(self):
+          valid_class = InputValidatorBaseClass()
+
+          # Base check for empty
+          self.assertEqual(valid_class.sval("")[0], None, "Should be None")
+          self.assertEqual(valid_class.sval(None)[0], None, "Should be None")
+          self.assertEqual(valid_class.sval("haha")[0], "haha", "Should be 'haha'")
+
+          # Cheecking of non-default default-value
+          self.assertEqual(valid_class.sval("", default=0)[0], 0, "Should be 0")
+          self.assertEqual(valid_class.sval(None, default=0)[0], 0, "Should be 0")
+          self.assertEqual(valid_class.sval("haha", default=0)[0], "haha", "Should be 'haha'")
+
+          # Checking for non digital default values
+          self.assertEqual(valid_class.fval(None, default="foo")[0], "foo", "Should be 'foo'")
+          self.assertEqual(valid_class.fval("", default=["foo", "bar"])[0], ["foo", "bar"], "Should be '['foo', 'bar']'")
+
 
 
 if __name__ == '__main__':

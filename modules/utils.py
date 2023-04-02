@@ -31,41 +31,47 @@ class InputError(Exception):
 class InputValidatorBaseClass():
     """  """
 
-    def __init__(self, chars=30):
-        self.chars = chars # Permitted input length
+    def __init__(self):
+        pass
 
 
     def _validate(func):
         """ Decorator function, to wrap function in a try-catch block. """
 
+
         def inner(self, *args, **kwargs):
             error_msg = "" # Msg for user! Default is empty.
+            value = args[0]
             output = kwargs.get("default", None) # Default, if try fails
 
             try:
+                # Checking if the textfield was empty ("" or None)
+                if value == "" or value is None:
+                    raise InputError()
+
                 # Try to run the function
                 output = func(self, *args, **kwargs)
 
             ## Logs exceptions
             except InputError: # Custom exception for my own messages!
-                error_msg = f"InputError ({args[0]}): Input is missing, using default value: {output}" 
+                error_msg = f"InputError ({value}): Input is missing, using default value: {output}" 
                 # l.info(error_msg)
 
             except TypeError as e_msg:
-                error_msg = f"TypeError ({args[0]}): {e_msg}"
+                error_msg = f"TypeError ({value}): {e_msg}"
                 # l.info(error_msg)
 
             except ValueError as e_msg:
-                error_msg = f"ValueError ({args[0]}): {e_msg}"
+                error_msg = f"ValueError ({value}): {e_msg}"
                 # l.info(error_msg)
 
             except Exception as e_msg:
-                error_msg = f"Unexpected error ({args[0]}): {e_msg}"
+                error_msg = f"Unexpected error ({value}): {e_msg}"
                 # l.info(error_msg)
 
             finally:
                 # Return output and error message
-                print(error_msg)
+                # print(error_msg)
                 return output, error_msg
 
         return inner
@@ -74,11 +80,6 @@ class InputValidatorBaseClass():
     @_validate
     def ival(self, value, default=None):
         """  """
-        # Checking if the textfield was empty ("" or None):
-        if self.input_is_missing(value):
-            raise InputError()
-
-        
         if isinstance(value, int):
             return value
 
@@ -93,11 +94,6 @@ class InputValidatorBaseClass():
     @_validate
     def fval(self, value, default=None):
         """  """
-        # Checking if the textfield was empty ("" or None):
-        if self.input_is_missing(value):
-            raise InputError()
-
-        
         if isinstance(value, float):
             return value
 
@@ -109,36 +105,20 @@ class InputValidatorBaseClass():
             return float(value.replace(" ","").replace("_",""))
 
 
-    def input_is_missing(self, value):
-        response = False
-        if value == "" or value is None:
-            response = True
-        return response
+    @_validate
+    def sval(self, value, default=None, chars=30, suffix=""):
+        """  """
+        output = str(value)
+        return output.strip()[:chars] + suffix
 
 
-
-
-
-    # def arbitrary_string(value):
-    #     """ Converts input to string, and removes trailing spaces. """
-    #     return str(value).strip()[:chars]
-
-
-    # def name_string(value):
-    #     """ Converts input to string, removes trailing spaces and capitalizes it. """
-    #     return str(value).strip().capitalize()[:chars]
-
-
-    # def param_string(value):
-    #     """ Converts input to string, removes trailing spaces, replace any remaining
-    #     space with '_'. Finally change all characters lowercase.
-    #     """
-    #     return str(value).strip().replace(" ","_").lower()[:chars]
-
-
-    # def truncate(string, length, suffix=""):
-    #     """ Truncate string to given length, and optionally add suffix to indicate truncation. """
-    #     return string[:length] + suffix
+    @_validate
+    def pval(self, value, default=None, chars=30):
+        """ Converts input to string, removes trailing spaces, replace any remaining
+        space with '_'. Finally change all characters lowercase.
+        """
+        output = str(output)
+        return output.strip().replace(" ","_").lower()[:chars]
 
 
     # def is_within_limits(int, lower, upper):
