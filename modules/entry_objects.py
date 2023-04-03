@@ -87,12 +87,8 @@ class IsotopeEntry(EntryObjectBaseClass):
         decays = {}
         for decay, decay_data in raw_data.items():
             product = decay_data.get("product")
-            rel_eng = decay_data.get("released_energy", "")
-            if rel_eng == "":
-                released_energy = 0
-            else:
-                released_energy = float(rel_eng)
-            probability = float(decay_data.get("probability", 1.0))
+            released_energy = decay_data.get("released_energy")
+            probability = decay_data.get("probability")
             decays.update(self.create_decay(decay, product, released_energy, probability))
 
         return decays
@@ -102,8 +98,8 @@ class IsotopeEntry(EntryObjectBaseClass):
         """  """
         decay = {decay_type : {
         "product" : product,
-        "probability": float(probability),
-        "released_energy" : float(released_energy)
+        "probability": probability,
+        "released_energy" : released_energy
         }}
         return decay
 

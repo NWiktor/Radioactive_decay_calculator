@@ -317,7 +317,7 @@ class CreateIsotopeWindow(QDialog):
                         probability, released_energy))
 
         except InputError as iee:
-            self.status_text.setText(iee)
+            self.status_text.setText(str(iee))
             return
 
         # Accept settings

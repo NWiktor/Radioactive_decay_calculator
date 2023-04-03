@@ -62,11 +62,11 @@ class InputValidatorBaseClass():
 
             ## Logs exceptions
             except TypeError as e_msg:
-                error_msg = f"TypeError ({value}): {e_msg}"
+                error_msg = f"TypeError ({value})"
                 raise InputError(error_msg) from None
 
             except ValueError as e_msg:
-                error_msg = f"ValueError ({value}): {e_msg}"
+                error_msg = f"ValueError ({value})"
                 raise InputError(error_msg) from None
 
             except Exception as e_msg:
