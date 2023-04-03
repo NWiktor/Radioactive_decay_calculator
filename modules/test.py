@@ -87,6 +87,5 @@ class TestInputValidatorBaseClass(unittest.TestCase):
           self.assertEqual(valid_class.pval("a b c d e", default="foo", chars=5), "a_b_c", "Should be 'a_b_c'")
 
 
-
 if __name__ == '__main__':
     unittest.main()
