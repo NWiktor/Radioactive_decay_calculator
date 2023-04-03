@@ -152,12 +152,15 @@ class MainWindow(QMainWindow):
 
     def edit_entry(self):
         """  """
-        choose_isotope_w = ChooseIsotopeWindow(self.isotope_database.keys())
-        choose_isotope_w.exec_()
+        while True:
+            choose_isotope_w = ChooseIsotopeWindow(self.isotope_database.keys())
+            choose_isotope_w.exec_()
 
-        if choose_isotope_w.results is not None:
-            iid = choose_isotope_w.results
-            self.add_entry(self.isotope_database[iid])
+            if choose_isotope_w.results is not None:
+                iid = choose_isotope_w.results
+                self.add_entry(self.isotope_database[iid])
+            else:
+                break
 
 
     def add_entry(self, default_data=None):
