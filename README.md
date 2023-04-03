@@ -12,7 +12,6 @@ The tool is currently in development, but the core is already functional.
 
 ## Todos
 * Populate database
-* Improve input validation and input error handling
 * Settings for stop isotope (where the decay chain calculation stops).
 * Add option to normalize and visualize decay product yield (0-100 % mass).
 * Implement raw data exporting.
