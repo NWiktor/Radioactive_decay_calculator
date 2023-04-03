@@ -165,6 +165,9 @@ class MainWindow(QMainWindow):
 
     def add_entry(self, default_data=None):
         """  """
+        # NOTE: When called by QAction, argument value is 'False'
+        if default_data is False:
+            default_data = None
         create_new_isotope_w = CreateIsotopeWindow(default_data)
         create_new_isotope_w.exec_()
 

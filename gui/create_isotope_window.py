@@ -33,6 +33,7 @@ from PyQt5.QtCore import Qt
 # Local application imports
 from logger import MAIN_LOGGER as l
 from modules.entry_objects import IsotopeEntry
+from modules.utils import InputValidatorBaseClass, InputError
 
 
 class ChooseIsotopeWindow(QDialog):
@@ -276,49 +277,54 @@ class CreateIsotopeWindow(QDialog):
 
     def accept_input(self):
         """ Collects the given inputs, and accepts them if all valid. """
-
+        IVC = InputValidatorBaseClass()
         self.status_text.setText("")
 
-        # TODO: move input checks into class!
         # Read inputs
-        name = self.isotope_name.text().capitalize().strip()
-        symbol = self.isotope_symbol.text().capitalize().strip()
-        mass_number = self.mass_number.text().strip()
+        try:
+            name = IVC.sval(self.isotope_name.text())
+            symbol = IVC.sval(self.isotope_symbol.text())
+            mass_number = IVC.ival(self.mass_number.text())
 
-        # Check mandatory params
-        if name == "":
-            self.status_text.setText("Isotope name is a mandatory parameter!")
+            # Check mandatory params
+            if name is None:
+                self.status_text.setText("Isotope name is a mandatory parameter!")
+                return
+            if symbol is None:
+                self.status_text.setText("Symbol is a mandatory parameter!")
+                return
+            if mass_number is None:
+                self.status_text.setText("Mass number is a mandatory parameter!")
+                return
+
+            # Fill params into a class
+            new_isotope = IsotopeEntry(name, symbol, mass_number)
+            new_isotope.proton_number = IVC.ival(self.proton_number.text())
+            new_isotope.neutron_number = IVC.ival(self.neutron_number.text())
+            new_isotope.reference = IVC.sval(self.reference.text())
+
+            if not self.stable.isChecked():
+                new_isotope.half_life = IVC.fval(self.half_life.text())
+                new_isotope.decays = {}
+
+                for field_layout in self.decay_field_list:
+                    decay_type = IVC.sval(field_layout.itemAt(1).widget().currentText())
+                    if decay_type != "":
+                        product = IVC.sval(field_layout.itemAt(3).widget().text())
+                        probability = IVC.fval(field_layout.itemAt(5).widget().text(), default=1)
+                        released_energy = IVC.fval(field_layout.itemAt(7).widget().text(), default=None)
+                        new_isotope.decays.update(new_isotope.create_decay(decay_type, product,
+                        probability, released_energy))
+
+        except InputError as iee:
+            self.status_text.setText(iee)
             return
-        if symbol == "":
-            self.status_text.setText("Symbol is a mandatory parameter!")
-            return
-        if mass_number == "":
-            self.status_text.setText("Mass number is a mandatory parameter!")
-            return
-
-        # Fill params into a class
-        new_isotope = IsotopeEntry(name, symbol, mass_number)
-        new_isotope.proton_number = self.proton_number.text()
-        new_isotope.neutron_number = self.neutron_number.text()
-        new_isotope.reference = self.reference.text()
-
-        if not self.stable.isChecked():
-            new_isotope.half_life = float(self.half_life.text().replace(" ",""))
-            new_isotope.decays = {}
-
-            for field_layout in self.decay_field_list:
-                decay_type = field_layout.itemAt(1).widget().currentText()
-                if decay_type != "":
-                    product = field_layout.itemAt(3).widget().text().strip()
-                    probability = field_layout.itemAt(5).widget().text().replace(" ","")
-                    released_energy = field_layout.itemAt(7).widget().text().replace(" ","")
-                    new_isotope.decays.update(new_isotope.create_decay(decay_type, product,
-                    probability, released_energy))
 
         # Accept settings
         l.info(f"New isotope entry created: {new_isotope.short_id}!")
-        self.results = new_isotope.dump() # Csak az OK esetén adjuk vissza a beállításokat!
+        self.results = new_isotope.dump() # Set results only when 'OK' is pressed!
         self.close_window()
+
 
     # pylint: disable = missing-function-docstring
     def close_window(self):
