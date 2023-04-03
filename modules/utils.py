@@ -25,19 +25,27 @@ import hashlib
 
 
 class InputError(Exception):
-    pass
+    """ Exception for InputValidatorBaseClass. """
 
 
 class InputValidatorBaseClass():
-    """  """
-
+    """ Validator object, used for converting textfield inputs. Class methods are always returning
+    a value (converted or fallback (default)) and an error massage for displaying purposes in PyQt
+    dialogs.
+    """
     def __init__(self):
         pass
 
 
+    # pylint: disable = no-self-argument, lost-exception
     def _validate(func):
-        """ Decorator function, to wrap function in a try-catch block. """
+        """ Decorator function, to wrap function in a try-catch block.
 
+        The purpose of this function to catch and handle user input errors and typing mistakes
+        (trailing or leading spaces, underlines as separators in large integers), and either handle
+        it internally, or return to the main loop, to allow correction. No need for 'self' as
+        argument.
+        """
 
         def inner(self, *args, **kwargs):
             error_msg = "" # Msg for user! Default is empty.
@@ -50,80 +58,96 @@ class InputValidatorBaseClass():
                     raise InputError()
 
                 # Try to run the function
+                # pylint: disable = not-callable
+                # NOTE: Decorator function, func is in fact callable
                 output = func(self, *args, **kwargs)
 
             ## Logs exceptions
             except InputError: # Custom exception for my own messages!
-                error_msg = f"InputError ({value}): Input is missing, using default value: {output}" 
-                # l.info(error_msg)
+                error_msg = f"InputError ({value}): Input is missing, using default value: {output}"
 
             except TypeError as e_msg:
                 error_msg = f"TypeError ({value}): {e_msg}"
-                # l.info(error_msg)
 
             except ValueError as e_msg:
                 error_msg = f"ValueError ({value}): {e_msg}"
-                # l.info(error_msg)
 
             except Exception as e_msg:
                 error_msg = f"Unexpected error ({value}): {e_msg}"
-                # l.info(error_msg)
 
             finally:
                 # Return output and error message
-                # print(error_msg)
                 return output, error_msg
 
         return inner
 
 
+    # pylint: disable = unused-argument
     @_validate
     def ival(self, value, default=None):
-        """  """
+        """ Returns input converted to integer, or default value and error massage.
+
+        :return: (output, massage)
+        :rytpe: (int, str)
+        """
         if isinstance(value, int):
             return value
 
         if isinstance(value, float):
             return int(value)
 
-        else:
-            # Removes spaces and '_' from input, before tries to convert to int
-            return int(value.replace(" ","").replace("_",""))
+        # Removes spaces and '_' from input, before tries to convert to int
+        return int(value.replace(" ","").replace("_",""))
 
 
+    # pylint: disable = unused-argument
     @_validate
     def fval(self, value, default=None):
-        """  """
+        """ Returns input converted to float, or default value and error massage.
+
+        :return: (output, massage)
+        :rytpe: (float, str)
+        """
         if isinstance(value, float):
             return value
 
         if isinstance(value, int):
             return float(value)
 
-        else:
-            # Removes spaces and '_' from input, before tries to convert to int
-            return float(value.replace(" ","").replace("_",""))
+        # Removes spaces and '_' from input, before tries to convert to int
+        return float(value.replace(" ","").replace("_",""))
 
 
+    # pylint: disable = unused-argument
     @_validate
     def sval(self, value, default=None, chars=30, suffix=""):
-        """  """
+        """ Returns input converted to string, or default value and error massage.
+        After conversion truncates string to 'chars' length and adds suffix.
+
+        :return: (output, massage)
+        :rytpe: (str, str)
+        """
         output = str(value)
         return output.strip()[:chars] + suffix
 
 
+    # pylint: disable = unused-argument
     @_validate
     def pval(self, value, default=None, chars=30):
-        """ Converts input to string, removes trailing spaces, replace any remaining
-        space with '_'. Finally change all characters lowercase.
+        """ Converts input to string, removes trailing spaces, replaces any remaining
+        space with '_'. Changes all characters lowercase and truncates string to 'chars'
+        length; or returns default value, and error massage.
+
+        :return: (output, massage)
+        :rytpe: (str, str)
         """
-        output = str(output)
+        output = str(value)
         return output.strip().replace(" ","_").lower()[:chars]
 
 
     # def is_within_limits(int, lower, upper):
 
-    #      # if lower_limit is not None and 
+    #      # if lower_limit is not None and
 
     #     return int(value)
 

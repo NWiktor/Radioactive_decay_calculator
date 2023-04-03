@@ -68,8 +68,28 @@ class TestInputValidatorBaseClass(unittest.TestCase):
           self.assertEqual(valid_class.sval("haha", default=0)[0], "haha", "Should be 'haha'")
 
           # Checking for non digital default values
-          self.assertEqual(valid_class.fval(None, default="foo")[0], "foo", "Should be 'foo'")
-          self.assertEqual(valid_class.fval("", default=["foo", "bar"])[0], ["foo", "bar"], "Should be '['foo', 'bar']'")
+          self.assertEqual(valid_class.sval(None, default="foo", chars=2, suffix="...")[0], "foo", "Should be 'foo'")
+          self.assertEqual(valid_class.sval("", default=["foo", "bar"], chars=2, suffix="...")[0], ["foo", "bar"], "Should be '['foo', 'bar']'")
+          self.assertEqual(valid_class.sval("a b c d e", default="foo", chars=5, suffix="...")[0], "a b c...", "Should be 'a_b_c...'")
+
+
+     def test_pval(self):
+          valid_class = InputValidatorBaseClass()
+
+          # Base check for empty
+          self.assertEqual(valid_class.pval("")[0], None, "Should be None")
+          self.assertEqual(valid_class.pval(None)[0], None, "Should be None")
+          self.assertEqual(valid_class.pval("haha")[0], "haha", "Should be 'haha'")
+
+          # Cheecking of non-default default-value
+          self.assertEqual(valid_class.pval("", default=0)[0], 0, "Should be 0")
+          self.assertEqual(valid_class.pval(None, default=0)[0], 0, "Should be 0")
+          self.assertEqual(valid_class.pval("haha", default=0)[0], "haha", "Should be 'haha'")
+
+          # Checking for non digital default values
+          self.assertEqual(valid_class.pval(None, default="foo", chars=2)[0], "foo", "Should be 'foo'")
+          self.assertEqual(valid_class.pval("", default=["foo", "bar"], chars=2)[0], ["foo", "bar"], "Should be '['foo', 'bar']'")
+          self.assertEqual(valid_class.pval("a b c d e", default="foo", chars=5)[0], "a_b_c", "Should be 'a_b_c'")
 
 
 
