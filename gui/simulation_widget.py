@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python3
+# !/usr/bin/python3
 
 """ Summary of this code file goes here. The purpose of this module can be
 expanded in multiple sentences. Below a short free-text summary of the included
@@ -25,13 +25,14 @@ from copy import deepcopy
 
 # Third party imports
 # pylint: disable = no-name-in-module
-from PyQt5.QtWidgets import (QWidget, QCompleter,
-QFormLayout, QLineEdit, QVBoxLayout, QHBoxLayout, QMenu,
-QPushButton, QComboBox, QListWidget, QLabel)
+from PyQt5.QtWidgets import (QWidget, QCompleter, QFormLayout, QLineEdit,
+                             QVBoxLayout, QHBoxLayout, QMenu, QPushButton,
+                             QComboBox, QListWidget, QLabel)
 from PyQt5.QtCore import QEvent
 
 # Local application imports
 from logger import MAIN_LOGGER as l
+
 
 # Class and function definitions
 class SimulationWidget(QWidget):
@@ -53,7 +54,6 @@ class SimulationWidget(QWidget):
         self._create_buttons()
         self._create_listview()
         self.setLayout(self.layout)
-
 
     def _create_fields(self):
         """  """
@@ -83,7 +83,6 @@ class SimulationWidget(QWidget):
         form_layout.addRow(QLabel("Isotope mass [kg]"), self.isotope_mass)
         self.layout.addLayout(form_layout)
 
-
     def _create_buttons(self):
         """  """
         button_box = QHBoxLayout()
@@ -92,7 +91,6 @@ class SimulationWidget(QWidget):
         button_box.addWidget(button_accept)
         button_box.addStretch()
         self.layout.addLayout(button_box)
-
 
     def _create_listview(self):
         """  """
@@ -103,9 +101,9 @@ class SimulationWidget(QWidget):
         self.shown_iso_list_widget.installEventFilter(self)
         self.layout.addWidget(self.shown_iso_list_widget)
 
-
     def eventFilter(self, source, event):
-        if event.type() == QEvent.ContextMenu and source is self.shown_iso_list_widget:
+        if (event.type() == QEvent.ContextMenu and
+                source is self.shown_iso_list_widget):
             menu = QMenu()
             menu.addAction('Delete')
             # menu.addAction('Action 2')
@@ -119,20 +117,18 @@ class SimulationWidget(QWidget):
             return True
         return super().eventFilter(source, event)
 
-
     def accept_input(self):
         """  """
         try:
             name = self.isotope_name_cbox.currentText().strip()
             mass = float(self.isotope_mass.text().strip())
 
-        except:
+        except Exception:
             l.error("Wrong input for mass value!")
             return
 
         self.isotopes_list.update({name: mass})
         self.refresh_listview()
-
 
     def refresh_listview(self):
         """ Clear listview and repopulate. """
@@ -141,11 +137,12 @@ class SimulationWidget(QWidget):
             self.shown_iso_list_widget.addItem(f"{name} - {mass} [kg]")
         l.debug("Isotopes for calculation: %s", self.isotopes_list)
 
-
     def get_simulation_parameters(self):
         """  """
         return (deepcopy(self.isotopes_list),
-            int(self.interval.text().strip()), int(self.step_number.text().strip()))
+                int(self.interval.text().strip()),
+                int(self.step_number.text().strip())
+                )
 
 
 # Include guard
