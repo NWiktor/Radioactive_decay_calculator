@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python3
+# !/usr/bin/python3
 
 """ Summary of this code file goes here. The purpose of this module can be
 expanded in multiple sentences. Below a short free-text summary of the included
@@ -24,10 +24,9 @@ Contents
 
 # Third party imports
 # pylint: disable = no-name-in-module
-from PyQt5.QtWidgets import (QDialog, QWidget,
-QFormLayout, QCheckBox,QLineEdit, QVBoxLayout,
-QHBoxLayout, QGridLayout, QPushButton, QComboBox,
-QLabel, QCompleter)
+from PyQt5.QtWidgets import (QDialog, QWidget, QFormLayout, QCheckBox,
+                             QLineEdit, QVBoxLayout, QHBoxLayout, QGridLayout,
+                             QPushButton, QComboBox, QLabel, QCompleter)
 from PyQt5.QtCore import Qt
 
 # Local application imports
@@ -36,9 +35,9 @@ from modules.entry_objects import IsotopeEntry
 from modules.utils import InputValidatorBaseClass, InputError
 
 
+# pylint: disable = missing-function-docstring
 class ChooseIsotopeWindow(QDialog):
-    """ Isotope combobox window for PyQt5.
-    """
+    """ Isotope combobox window for PyQt5. """
 
     def __init__(self, keys):
         super().__init__(parent=None)
@@ -52,19 +51,18 @@ class ChooseIsotopeWindow(QDialog):
         self._create_buttons()
         self.setLayout(self.layout)
 
-
     def _create_fields(self):
         """  """
         form_layout = QFormLayout()
-        self.isotope_name_cbox = QComboBox() # Isotope name Cbox
+        self.isotope_name_cbox = QComboBox()  # Isotope name Cbox
         self.isotope_name_cbox.addItems(sorted(self.keys))
         self.isotope_name_cbox.setFixedWidth(70)
         self.isotope_name_cbox.setEditable(True)
-        self.isotope_name_cbox.completer().setCompletionMode(QCompleter.PopupCompletion)
+        self.isotope_name_cbox.completer().setCompletionMode(
+                QCompleter.PopupCompletion)
         self.isotope_name_cbox.setInsertPolicy(QComboBox.NoInsert)
         form_layout.addRow(QLabel("Choose to edit:"), self.isotope_name_cbox)
         self.layout.addLayout(form_layout)
-
 
     def _create_buttons(self):
         """  """
@@ -78,19 +76,16 @@ class ChooseIsotopeWindow(QDialog):
         button_box.addWidget(button_close)
         self.layout.addLayout(button_box)
 
-
     def accept_input(self):
         name = self.isotope_name_cbox.currentText()
         self.results = name
         self.close()
 
-
-    # pylint: disable = missing-function-docstring
     def close_window(self):
         self.close()
 
 
-# Class and function definitions
+# pylint: disable = missing-function-docstring
 class CreateIsotopeWindow(QDialog):
     """Isotope creation window for PyQt5.
     """
@@ -109,12 +104,13 @@ class CreateIsotopeWindow(QDialog):
             self.add_default_values(default_data)
         self.setLayout(self.layout)
 
-
     def _create_fields(self):
         """  """
         # header
         field_layout = QVBoxLayout()
-        field_layout.addWidget(QLabel("Isotope properties"), alignment=Qt.AlignCenter)
+        field_layout.addWidget(
+                QLabel("Isotope properties"), alignment=Qt.AlignCenter
+        )
 
         # name
         form_layout1 = QFormLayout()
@@ -165,7 +161,6 @@ class CreateIsotopeWindow(QDialog):
         field_layout.addStretch()
         self.layout.addLayout(field_layout, 0, 0)
 
-
     def _create_decay_field(self):
         """  """
         self.decay_field_list = []
@@ -184,8 +179,10 @@ class CreateIsotopeWindow(QDialog):
         layout2.addLayout(form_layout2)
 
         # Generate field for decays
-        for i in range(0,3):
-            layout2.addWidget(QLabel(f"Decay mode {i+1}"), alignment=Qt.AlignCenter)
+        for i in range(0, 3):
+            layout2.addWidget(
+                    QLabel(f"Decay mode {i+1}"), alignment=Qt.AlignCenter
+            )
             decays_layout = QFormLayout()
 
             # decay_type
@@ -223,13 +220,12 @@ class CreateIsotopeWindow(QDialog):
         self.decay_field_widget.setLayout(layout2)
         self.layout.addWidget(self.decay_field_widget, 0, 1)
 
-
     def _create_buttons(self):
         """  """
         # Feedback widget
         self.status_text = QLabel('')
         self.status_text.setStyleSheet("color: red")
-        self.layout.addWidget(self.status_text, 1,0)
+        self.layout.addWidget(self.status_text, 1, 0)
 
         # Buttons
         button_box = QHBoxLayout()
@@ -242,11 +238,8 @@ class CreateIsotopeWindow(QDialog):
         button_box.addWidget(button_close)
         self.layout.addLayout(button_box, 1, 1)
 
-
-    # pylint: disable = missing-function-docstring
     def toggle_decay_field(self):
         self.decay_field_widget.setEnabled(not self.stable.isChecked())
-
 
     def add_default_values(self, defaults):
         """ Fills fields with default values. """
@@ -270,10 +263,13 @@ class CreateIsotopeWindow(QDialog):
                 decay_field = self.decay_field_list[step]
                 decay_field.itemAt(1).widget().setCurrentText(isotope)
                 decay_field.itemAt(3).widget().setText(decay.get("product", ""))
-                decay_field.itemAt(5).widget().setText(str(decay.get("probability", "")))
-                decay_field.itemAt(7).widget().setText(str(decay.get("released_energy", "")))
+                decay_field.itemAt(5).widget().setText(
+                        str(decay.get("probability", ""))
+                )
+                decay_field.itemAt(7).widget().setText(
+                        str(decay.get("released_energy", ""))
+                )
                 step += 1
-
 
     def accept_input(self):
         """ Collects the given inputs, and accepts them if all valid. """
@@ -288,13 +284,15 @@ class CreateIsotopeWindow(QDialog):
 
             # Check mandatory params
             if name is None:
-                self.status_text.setText("Isotope name is a mandatory parameter!")
+                self.status_text.setText(
+                        "Isotope name is a mandatory parameter!")
                 return
             if symbol is None:
                 self.status_text.setText("Symbol is a mandatory parameter!")
                 return
             if mass_number is None:
-                self.status_text.setText("Mass number is a mandatory parameter!")
+                self.status_text.setText(
+                        "Mass number is a mandatory parameter!")
                 return
 
             # Fill params into a class
@@ -308,13 +306,25 @@ class CreateIsotopeWindow(QDialog):
                 new_isotope.decays = {}
 
                 for field_layout in self.decay_field_list:
-                    decay_type = IVC.sval(field_layout.itemAt(1).widget().currentText())
+                    decay_type = IVC.sval(
+                            field_layout.itemAt(1).widget().currentText()
+                    )
                     if decay_type != "":
-                        product = IVC.sval(field_layout.itemAt(3).widget().text())
-                        probability = IVC.fval(field_layout.itemAt(5).widget().text(), default=1)
-                        released_energy = IVC.fval(field_layout.itemAt(7).widget().text(), default=None)
-                        new_isotope.decays.update(new_isotope.create_decay(decay_type, product,
-                        probability, released_energy))
+                        product = IVC.sval(
+                                field_layout.itemAt(3).widget().text()
+                        )
+                        probability = IVC.fval(
+                                field_layout.itemAt(5).widget().text(),
+                                default=1
+                        )
+                        released_energy = IVC.fval(
+                                field_layout.itemAt(7).widget().text(),
+                                default=None
+                        )
+                        new_isotope.decays.update(new_isotope.create_decay(
+                                decay_type, product,
+                                probability, released_energy)
+                        )
 
         except InputError as iee:
             self.status_text.setText(str(iee))
@@ -322,11 +332,10 @@ class CreateIsotopeWindow(QDialog):
 
         # Accept settings
         l.info(f"New isotope entry created: {new_isotope.short_id}!")
-        self.results = new_isotope.dump() # Set results only when 'OK' is pressed!
+        # Set results only when 'OK' is pressed!
+        self.results = new_isotope.dump()
         self.close_window()
 
-
-    # pylint: disable = missing-function-docstring
     def close_window(self):
         self.close()
 
