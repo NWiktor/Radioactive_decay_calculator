@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python3
+# !/usr/bin/python3
 
 """JSON database handler module for SeatUP Desktop App. This module describes
 the JSON database handler classes.
@@ -26,7 +26,7 @@ import json
 from logger import MAIN_LOGGER as l
 
 
-class JsonDbHandler():
+class JsonDbHandler:
     """JSON database handler baseclass.
 
     This class contains all base function and method for handling JSON
@@ -36,10 +36,8 @@ class JsonDbHandler():
     :type path: filepath
 
     """
-
     def __init__(self, path):
         self._filepath = path
-
 
     def load(self):
         """Loads a JSON object from a given filepath, then converts it to python
@@ -52,7 +50,6 @@ class JsonDbHandler():
         with open(self._filepath, encoding='utf8') as read_file:
             return json.load(read_file)  # Változóba tölti be a json fájlt
 
-
     def dump(self, database):
         """Dumps (writes) a given python dictionary to the disk as JSON object.
 
@@ -63,9 +60,8 @@ class JsonDbHandler():
         with open(self._filepath, "w", encoding='utf8') as write_file:
             json.dump(database, write_file, ensure_ascii=False, indent=4)
 
-
     # NOTE: update2 is unnecessary, because it's implies 3x nested dictionary,
-    # which is too complex to implement
+    #  which is too complex to implement
     def update(self, new_database):
         """Loads, updates and dumps a JSON object with another database (dict).
 
@@ -76,7 +72,6 @@ class JsonDbHandler():
         database = self.load()
         database.update(new_database)
         self.dump(database)
-
 
     # TODO: Find better name for behavior
     # Set value in database (overwrites if exists)
@@ -89,11 +84,10 @@ class JsonDbHandler():
         :type section: dict
 
         """
-        database = self.load() # DB betöltése
-        database[identifier] = section # Adott bejegyzés beszúrása
-        self.dump(database) # DB kiírása
+        database = self.load()  # DB betöltése
+        database[identifier] = section  # Adott bejegyzés beszúrása
+        self.dump(database)  # DB kiírása
         l.info("Database %s succesfully updated!", self._filepath)
-
 
     # TODO: Check behavior, and add option to toggle update/overwrite
     # TODO: Find better name for behavior
@@ -108,15 +102,14 @@ class JsonDbHandler():
         :type section: dict
 
         """
-        database = self.load() # DB betöltése
+        database = self.load()  # DB betöltése
         if database[identifier] is not None:
             # Adott bejegyzés beszúrása
-            database[identifier].update({ identifier2 : section })
+            database[identifier].update({identifier2: section})
         else:
-            database[identifier] = { identifier2 : section }
-        self.dump(database) # DB kiírása
+            database[identifier] = {identifier2: section}
+        self.dump(database)  # DB kiírása
         l.info("Database %s succesfully updated!", self._filepath)
-
 
     def delete_section(self, identifier):
         """Delete given entry (section) from JSON object.
@@ -124,14 +117,13 @@ class JsonDbHandler():
         :param str identifier: Key in database (JSON object).
 
         """
-        database = self.load() # DB betöltése
-        del database[identifier] # Adott bejegyzés törlése
-        self.dump(database) # DB kiírása
+        database = self.load()  # DB betöltése
+        del database[identifier]  # Adott bejegyzés törlése
+        self.dump(database)  # DB kiírása
         l.info("Database %s succesfully updated!", self._filepath)
 
     # NOTE: delete_section2 is unnecessary, as existing sub-keys with None/null
-    # value are preferred over missing keys
-
+    #  value are preferred over missing keys
 
     def print_contents(self):
         """Print contents of JSON object."""
@@ -144,7 +136,6 @@ class JsonDbHandler():
         else:
             self.pretty_print(database)
 
-
     def pretty_print(self, printed_dict, indentation=0, tab="    "):
         """Pretty prints dictionary to console.
 
@@ -156,23 +147,20 @@ class JsonDbHandler():
         :param str tab: Indentation (default = "    ", *4 whitespaces*)
 
         """
-
         for key in printed_dict:
-            value = printed_dict[key] # Set value for understandability
+            value = printed_dict[key]  # Set value for understandability
 
-            if isinstance(value, dict): # If subkey is dict
-                new_dict = printed_dict[key] # New dictionary
+            if isinstance(value, dict):  # If subkey is dict
+                new_dict = printed_dict[key]  # New dictionary
                 print(f"{indentation*tab}{key} : ")
                 self.pretty_print(new_dict, indentation+1, tab)
 
             else:
                 print(f"{indentation*tab}{key} : {value}")
 
-
     def __str__(self):
-        """This function overloads the string conversion of the JSON object, to
-        pretty prints the JSON object to console.
-
+        """This function overloads the string conversion of the JSON object,
+        to pretty prints the JSON object to console.
         """
         self.print_contents()
         return ""

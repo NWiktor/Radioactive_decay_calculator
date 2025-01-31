@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python3
+# !/usr/bin/python3
 
 # TODO: Rewrite documentation
 """This module collects the database entry classes for the SeatUP project. The
@@ -14,22 +14,19 @@ Contents
 from logger import MAIN_LOGGER as l
 
 
-class EntryObjectBaseClass():
+class EntryObjectBaseClass:
     """  """
 
     def __init__(self):
         pass
 
-
     def dump(self):
         """Returns a dictionary with entry data."""
         return self.__dict__.copy()
 
-
     def clear(self):
         """Erases all loaded and existing data to allow refresh."""
         self.__dict__ = {}
-
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
@@ -51,12 +48,13 @@ class IsotopeEntry(EntryObjectBaseClass):
         self.neutron_number = None
         self.reference = None
         self.half_life = None
-        self.decays = None # dict of dicts - multiple decay type is possible
+        self.decays = None  # dict of dicts - multiple decay type is possible
         l.debug("Entry created!")
 
-
     def load(self, raw_data):
-        """ Load existing data (dict) to class structure, to filter entry, and set defaults. """
+        """ Load existing data (dict) to class structure, to filter entry,
+        and set defaults.
+        """
         self.name = raw_data.get("name", None)
         self.symbol = raw_data.get("symbol", None)
         self.mass_number = raw_data.get("mass_number", None)
@@ -76,11 +74,12 @@ class IsotopeEntry(EntryObjectBaseClass):
                 l.debug("Decays loaded!")
 
             else:
-                l.error("Undefined decay for unstable isotope! Please check input data!")
+                l.error("Undefined decay for unstable isotope! "
+                        "Please check input data!"
+                        )
                 self.decays = None
 
         l.debug("Entry loaded!")
-
 
     def _load_decays(self, raw_data):
         """  """
@@ -89,18 +88,19 @@ class IsotopeEntry(EntryObjectBaseClass):
             product = decay_data.get("product")
             released_energy = decay_data.get("released_energy")
             probability = decay_data.get("probability")
-            decays.update(self.create_decay(decay, product, released_energy, probability))
+            decays.update(self.create_decay(
+                    decay, product, released_energy, probability)
+            )
 
         return decays
 
-
     def create_decay(self, decay_type, product, probability, released_energy):
         """  """
-        decay = {decay_type : {
-        "product" : product,
-        "probability": probability,
-        "released_energy" : released_energy
-        }}
+        decay = {decay_type: {"product": product,
+                              "probability": probability,
+                              "released_energy": released_energy
+                              }
+                 }
         return decay
 
 

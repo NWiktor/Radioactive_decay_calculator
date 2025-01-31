@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python3
+# !/usr/bin/python3
 
 """This module is a collection of independent, basic functions, which are used
 in the project multiple places.
@@ -16,7 +16,6 @@ Help
 Contents
 --------
 """
-
 import secrets
 import string
 import time
@@ -28,29 +27,28 @@ class InputError(Exception):
     """ Exception for InputValidatorBaseClass. """
 
 
-class InputValidatorBaseClass():
-    """ Validator object, used for converting textfield inputs. Class methods are always returning
-    a value (converted or fallback (default)) and an error massage for displaying purposes in PyQt
-    dialogs.
+class InputValidatorBaseClass:
+    """ Validator object, used for converting textfield inputs. Class methods
+    are always returning a value (converted or fallback (default)) and an error
+    message for displaying purposes in PyQt dialogs.
     """
     def __init__(self):
         pass
-
 
     # pylint: disable = no-self-argument, lost-exception, raise-missing-from
     def _validate(func):
         """ Decorator function, to wrap function in a try-catch block.
 
-        The purpose of this function to catch and handle user input errors and typing mistakes
-        (trailing or leading spaces, underlines as separators in large integers), and either handle
-        it internally (if missing, using default value), or raise Exception, to catch it in the
-        main loop, to allow correction. No need for 'self' as argument.
+        The purpose of this function to catch and handle user input errors and
+        typing mistakes (trailing or leading spaces, underlines as separators
+        in large integers), and either handle it internally (if missing, using
+        default value), or raise Exception, to catch it in the main loop, to
+        allow correction. No need for 'self' as argument.
         """
-
         def inner(self, *args, **kwargs):
-            error_msg = "" # Msg for user! Default is empty.
+            error_msg = ""  # Msg for user! Default is empty.
             value = args[0]
-            output = kwargs.get("default", None) # Fallback, if input is missing.
+            output = kwargs.get("default", None)  # Fallback, if input is missing.
 
             try:
                 # Checking if textfield was empty ("" or None)
@@ -60,7 +58,7 @@ class InputValidatorBaseClass():
 
                 return output
 
-            ## Logs exceptions
+            # Logging exceptions:
             except TypeError as e_msg:
                 error_msg = f"TypeError ({value})"
                 raise InputError(error_msg) from None
@@ -74,7 +72,6 @@ class InputValidatorBaseClass():
                 raise InputError(error_msg) from None
 
         return inner
-
 
     # pylint: disable = unused-argument
     @_validate
@@ -91,8 +88,7 @@ class InputValidatorBaseClass():
             return int(value)
 
         # Removes spaces and '_' from input, before tries to convert to int
-        return int(value.replace(" ","").replace("_",""))
-
+        return int(value.replace(" ", "").replace("_", ""))
 
     # pylint: disable = unused-argument
     @_validate
@@ -109,14 +105,13 @@ class InputValidatorBaseClass():
             return float(value)
 
         # Removes spaces and '_' from input, before tries to convert to int
-        return float(value.replace(" ","").replace("_",""))
-
+        return float(value.replace(" ", "").replace("_", ""))
 
     # pylint: disable = unused-argument
     @_validate
     def sval(self, value, default=None, chars=30, suffix=""):
-        """ Returns input converted to string. After conversion truncates string to 'chars' length
-        and adds suffix.
+        """ Returns input converted to string. After conversion truncates
+        string to 'chars' length and adds suffix.
 
         :return: output
         :rytpe: str
@@ -124,26 +119,24 @@ class InputValidatorBaseClass():
         output = str(value)
         return output.strip()[:chars] + suffix
 
-
     # pylint: disable = unused-argument
     @_validate
     def pval(self, value, default=None, chars=30):
-        """ Converts input to string, removes trailing spaces, replaces any remaining space
-        with '_'. Changes all characters lowercase and truncates string to 'chars' length.
+        """ Converts input to string, removes trailing spaces, replaces any
+        remaining space with '_'. Changes all characters lowercase and truncates
+        string to 'chars' length.
 
         :return: (output, massage)
         :rytpe: (str, str)
         """
         output = str(value)
-        return output.strip().replace(" ","_").lower()[:chars]
-
+        return output.strip().replace(" ", "_").lower()[:chars]
 
     # def is_within_limits(int, lower, upper):
 
     #      # if lower_limit is not None and
 
     #     return int(value)
-
 
 
 def get_actual_time():
@@ -174,7 +167,7 @@ def reset_password():
 
     """
     letter_pool = string.ascii_uppercase + string.ascii_lowercase + string.digits
-    temp_password_raw = ''.join(secrets.choice(letter_pool) for i in range(6))
+    temp_password_raw = ''.join(secrets.choice(letter_pool) for _ in range(6))
     return temp_password_raw, hash_password(temp_password_raw)
 
 
