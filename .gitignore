@@ -1,6 +1,7 @@
 # Custom ignores (Logging folder, pylinter)
 log/
 _run_pylinter.bat
+/.idea
 
 # --------
 # Byte-compiled / optimized / DLL files
